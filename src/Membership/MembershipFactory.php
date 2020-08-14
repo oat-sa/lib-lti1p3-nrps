@@ -56,11 +56,13 @@ class MembershipFactory implements MembershipFactoryInterface
             $membership = new Membership($data['id'], $context);
 
             foreach ($data['members'] ?? [] as $memberData) {
+                $memberUserIdentity = $this->createMemberUserIdentity($memberData);
+
                 $member = new Member(
-                    $this->createMemberUserIdentity($memberData),
+                    $memberUserIdentity,
                     $memberData['status'] ?? MemberInterface::STATUS_ACTIVE,
                     $memberData['roles'] ?? [],
-                    $memberData
+                    array_intersect($memberUserIdentity->normalize(), $memberData)
                 );
 
                 $membership->addMember($member);
@@ -81,7 +83,6 @@ class MembershipFactory implements MembershipFactoryInterface
             $memberData['email'] ?? null,
             $memberData['given_name'] ?? null,
             $memberData['family_name'] ?? null,
-            $memberData['middle_name'] ?? null,
             $memberData['middle_name'] ?? null,
             $memberData['locale'] ?? null,
             $memberData['picture'] ?? null

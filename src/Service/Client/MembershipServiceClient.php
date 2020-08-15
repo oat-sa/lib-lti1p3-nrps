@@ -27,8 +27,8 @@ use OAT\Library\Lti1p3Core\Message\Claim\NrpsClaim;
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClient;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClientInterface;
-use OAT\Library\Lti1p3Nrps\Membership\MembershipFactory;
-use OAT\Library\Lti1p3Nrps\Membership\MembershipFactoryInterface;
+use OAT\Library\Lti1p3Nrps\Membership\MembershipSerializer;
+use OAT\Library\Lti1p3Nrps\Membership\MembershipSerializerInterface;
 use OAT\Library\Lti1p3Nrps\Membership\MembershipInterface;
 use RuntimeException;
 use Throwable;
@@ -42,17 +42,15 @@ class MembershipServiceClient
     public const CONTENT_TYPE_MEMBERSHIP = 'application/vnd.ims.lti-nrps.v2.membershipcontainer+json';
 
     /** @var ServiceClientInterface */
-    private $serviceClient;
+    private $client;
 
-    /** @var MembershipFactoryInterface */
-    private $membershipFactory;
+    /** @var MembershipSerializerInterface */
+    private $serializer;
 
-    public function __construct(
-        ServiceClientInterface $serviceClient = null,
-        MembershipFactoryInterface $membershipFactory = null
-    ) {
-        $this->serviceClient = $serviceClient ?? new ServiceClient();
-        $this->membershipFactory = $membershipFactory ?? new MembershipFactory();
+    public function __construct(ServiceClientInterface $client = null, MembershipSerializerInterface $serializer = null)
+    {
+        $this->client = $client ?? new ServiceClient();
+        $this->serializer = $serializer ?? new MembershipSerializer();
     }
 
     /**
@@ -66,7 +64,7 @@ class MembershipServiceClient
         int $limit = null
     ): MembershipInterface {
         try {
-            $response = $this->serviceClient->request(
+            $response = $this->client->request(
                 $registration,
                 'GET',
                 $this->buildNrpsEndpointUrl($nrpsClaim, $role, $limit),
@@ -78,13 +76,7 @@ class MembershipServiceClient
                 ]
             );
 
-            $responseData = json_decode($response->getBody()->__toString(), true);
-
-            if (JSON_ERROR_NONE !== json_last_error()) {
-                throw new RuntimeException(sprintf('json_decode error: %s', json_last_error_msg()));
-            }
-
-            return $this->membershipFactory->create($responseData);
+            return $this->serializer->deserialize($response->getBody()->__toString());
 
         } catch (Throwable $exception) {
             throw new LtiException(

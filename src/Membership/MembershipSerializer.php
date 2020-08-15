@@ -29,9 +29,10 @@ use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
 use OAT\Library\Lti1p3Nrps\Context\Context;
 use OAT\Library\Lti1p3Nrps\Member\Member;
 use OAT\Library\Lti1p3Nrps\Member\MemberInterface;
+use RuntimeException;
 use Throwable;
 
-class MembershipFactory implements MembershipFactoryInterface
+class MembershipSerializer implements MembershipSerializerInterface
 {
     /** @var UserIdentityFactoryInterface */
     private $userIdentityFactory;
@@ -41,12 +42,25 @@ class MembershipFactory implements MembershipFactoryInterface
         $this->userIdentityFactory = $userIdentityFactory ?? new UserIdentityFactory();
     }
 
+    public function serialize(MembershipInterface $membership): string
+    {
+        // TODO: Implement serialize() method.
+    }
+
     /**
      * @throws LtiException
      */
-    public function create(array $data): MembershipInterface
+    public function deserialize(string $jsonData): MembershipInterface
     {
         try {
+            $data = json_decode($jsonData, true);
+
+            if (JSON_ERROR_NONE !== json_last_error()) {
+                throw new RuntimeException(
+                    sprintf('Error during membership deserialization (json_decode): %s', json_last_error_msg())
+                );
+            }
+
             $context = new Context(
                 $data['context']['id'],
                 $data['context']['label'] ?? null,

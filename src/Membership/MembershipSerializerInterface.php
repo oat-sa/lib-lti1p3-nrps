@@ -22,7 +22,9 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Nrps\Membership;
 
-interface MembershipFactoryInterface
+interface MembershipSerializerInterface
 {
-    public function create(array $data): MembershipInterface;
+    public function serialize(MembershipInterface $membership): string ;
+
+    public function deserialize(string $jsonData): MembershipInterface;
 }

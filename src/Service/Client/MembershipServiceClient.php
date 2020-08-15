@@ -95,7 +95,7 @@ class MembershipServiceClient
             $url = sprintf(
                 '%s%s%s',
                 $url,
-                strpos($url, '?') ? '?' : '&',
+                strpos($url, '?') ? '&' : '?',
                 sprintf('role=%s', urlencode($role))
             );
         }
@@ -104,7 +104,7 @@ class MembershipServiceClient
             $url = sprintf(
                 '%s%s%s',
                 $url,
-                strpos($url, '?') ? '?' : '&',
+                strpos($url, '?') ? '&' : '?',
                 sprintf('limit=%s', $limit)
             );
         }

@@ -76,7 +76,7 @@ class MembershipSerializer implements MembershipSerializerInterface
                     $memberUserIdentity,
                     $memberData['status'] ?? MemberInterface::STATUS_ACTIVE,
                     $memberData['roles'] ?? [],
-                    array_intersect($memberUserIdentity->normalize(), $memberData)
+                    array_diff_assoc($memberData, $memberUserIdentity->normalize())
                 );
 
                 $membership->addMember($member);

@@ -27,10 +27,9 @@ use OAT\Library\Lti1p3Core\Message\Claim\NrpsClaim;
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClient;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClientInterface;
-use OAT\Library\Lti1p3Nrps\Membership\MembershipFactory;
+use OAT\Library\Lti1p3Nrps\Membership\MembershipSerializer;
 use OAT\Library\Lti1p3Nrps\Membership\MembershipSerializerInterface;
 use OAT\Library\Lti1p3Nrps\Membership\MembershipInterface;
-use RuntimeException;
 use Throwable;
 
 /**
@@ -50,7 +49,7 @@ class MembershipServiceClient
     public function __construct(ServiceClientInterface $client = null, MembershipSerializerInterface $serializer = null)
     {
         $this->client = $client ?? new ServiceClient();
-        $this->serializer = $serializer ?? new MembershipFactory();
+        $this->serializer = $serializer ?? new MembershipSerializer();
     }
 
     /**

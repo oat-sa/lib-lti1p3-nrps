@@ -20,11 +20,8 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\TenantManagement\Factory;
+namespace OAT\Library\Lti1p3Nrps\Membership;
 
-use OAT\Library\Lti1p3Nrps\Membership\Membership;
-use OAT\Library\Lti1p3Nrps\Membership\MembershipInterface;
-use OAT\Library\Lti1p3Nrps\Membership\MembershipSerializerInterface;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;

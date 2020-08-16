@@ -32,7 +32,7 @@ use OAT\Library\Lti1p3Nrps\Member\MemberInterface;
 use RuntimeException;
 use Throwable;
 
-class MembershipFactory
+class MembershipSerializerOld
 {
     /** @var UserIdentityFactoryInterface */
     private $userIdentityFactory;

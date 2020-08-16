@@ -27,7 +27,7 @@ use OAT\Library\Lti1p3Core\Message\Claim\NrpsClaim;
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClient;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClientInterface;
-use OAT\Library\Lti1p3Nrps\Membership\MembershipSerializer;
+use OAT\Library\Lti1p3Nrps\Membership\MembershipFactory;
 use OAT\Library\Lti1p3Nrps\Membership\MembershipSerializerInterface;
 use OAT\Library\Lti1p3Nrps\Membership\MembershipInterface;
 use RuntimeException;
@@ -50,7 +50,7 @@ class MembershipServiceClient
     public function __construct(ServiceClientInterface $client = null, MembershipSerializerInterface $serializer = null)
     {
         $this->client = $client ?? new ServiceClient();
-        $this->serializer = $serializer ?? new MembershipSerializer();
+        $this->serializer = $serializer ?? new MembershipFactory();
     }
 
     /**
@@ -69,7 +69,7 @@ class MembershipServiceClient
                 'GET',
                 $this->buildNrpsEndpointUrl($nrpsClaim, $role, $limit),
                 [
-                    'headers' => ['Content-Type' => static::CONTENT_TYPE_MEMBERSHIP]
+                    'headers' => ['Accept' => static::CONTENT_TYPE_MEMBERSHIP]
                 ],
                 [
                     self::AUTHORIZATION_SCOPE_MEMBERSHIP

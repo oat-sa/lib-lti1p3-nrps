@@ -20,16 +20,16 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Membership;
+namespace OAT\Library\Lti1p3Nrps\Member;
 
-use OAT\Library\Lti1p3Nrps\Context\ContextInterface;
-use OAT\Library\Lti1p3Nrps\Member\MemberCollectionInterface;
+use Countable;
+use IteratorAggregate;
 
-interface MembershipInterface
+interface MemberCollectionInterface extends Countable, IteratorAggregate
 {
-    public function getIdentifier(): string;
+    public function add(MemberInterface $member): MemberCollectionInterface;
 
-    public function getContext(): ContextInterface;
+    public function get(string $identifier): MemberInterface;
 
-    public function getMembers(): MemberCollectionInterface;
+    public function has(string $identifier): bool;
 }

@@ -22,39 +22,7 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Nrps\Membership;
 
-use OAT\Library\Lti1p3Nrps\Context\ContextInterface;
-use OAT\Library\Lti1p3Nrps\Member\MemberCollectionInterface;
-
-class Membership implements MembershipInterface
+interface MembershipFactoryInterface
 {
-    /** @var string */
-    private $identifier;
-
-    /** @var ContextInterface */
-    private $context;
-
-    /** @var MemberCollectionInterface */
-    private $members;
-
-    public function __construct(string $identifier, ContextInterface $context, MemberCollectionInterface $members)
-    {
-        $this->identifier = $identifier;
-        $this->context = $context;
-        $this->members = $members;
-    }
-
-    public function getIdentifier(): string
-    {
-        return $this->identifier;
-    }
-
-    public function getContext(): ContextInterface
-    {
-        return $this->context;
-    }
-
-    public function getMembers(): MemberCollectionInterface
-    {
-        return $this->members;
-    }
+    public function create(array $data): MembershipInterface;
 }

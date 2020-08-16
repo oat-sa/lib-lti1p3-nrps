@@ -20,86 +20,48 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Membership;
+namespace OAT\Library\TenantManagement\Factory;
 
-use OAT\Library\Lti1p3Core\Exception\LtiException;
-use OAT\Library\Lti1p3Core\User\UserIdentityFactory;
-use OAT\Library\Lti1p3Core\User\UserIdentityFactoryInterface;
-use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
-use OAT\Library\Lti1p3Nrps\Context\Context;
-use OAT\Library\Lti1p3Nrps\Member\Member;
-use OAT\Library\Lti1p3Nrps\Member\MemberInterface;
-use RuntimeException;
-use Throwable;
+use OAT\Library\Lti1p3Nrps\Membership\Membership;
+use OAT\Library\Lti1p3Nrps\Membership\MembershipInterface;
+use OAT\Library\Lti1p3Nrps\Membership\MembershipSerializerInterface;
+use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class MembershipSerializer implements MembershipSerializerInterface
 {
-    /** @var UserIdentityFactoryInterface */
-    private $userIdentityFactory;
+    /** @var Serializer */
+    private $serializer;
 
-    public function __construct(UserIdentityFactoryInterface $userIdentityFactory = null)
+    public function __construct()
     {
-        $this->userIdentityFactory = $userIdentityFactory ?? new UserIdentityFactory();
+        $this->serializer = $this->buildSerializer();
     }
 
     public function serialize(MembershipInterface $membership): string
     {
-        // TODO: Implement serialize() method.
+        return $this->serializer->serialize($membership, 'json');
     }
 
-    /**
-     * @throws LtiException
-     */
-    public function deserialize(string $jsonData): MembershipInterface
+
+    public function deserialize(string $data): MembershipInterface
     {
-        try {
-            $data = json_decode($jsonData, true);
-
-            if (JSON_ERROR_NONE !== json_last_error()) {
-                throw new RuntimeException(
-                    sprintf('Error during membership deserialization (json_decode): %s', json_last_error_msg())
-                );
-            }
-
-            $context = new Context(
-                $data['context']['id'],
-                $data['context']['label'] ?? null,
-                $data['context']['title'] ?? null
-            );
-
-            $membership = new Membership($data['id'], $context);
-
-            foreach ($data['members'] ?? [] as $memberData) {
-                $memberUserIdentity = $this->createMemberUserIdentity($memberData);
-
-                $member = new Member(
-                    $memberUserIdentity,
-                    $memberData['status'] ?? MemberInterface::STATUS_ACTIVE,
-                    $memberData['roles'] ?? [],
-                    array_diff_assoc($memberData, $memberUserIdentity->normalize())
-                );
-
-                $membership->addMember($member);
-            }
-
-            return $membership;
-
-        } catch (Throwable $exception) {
-            throw new LtiException($exception->getMessage(), $exception->getCode(), $exception);
-        }
+        return $this->serializer->deserialize($data, Membership::class, 'json');
     }
 
-    private function createMemberUserIdentity(array $memberData): UserIdentityInterface
+    private function buildSerializer(): Serializer
     {
-        return $this->userIdentityFactory->create(
-            $memberData['user_id'],
-            $memberData['name'] ?? null,
-            $memberData['email'] ?? null,
-            $memberData['given_name'] ?? null,
-            $memberData['family_name'] ?? null,
-            $memberData['middle_name'] ?? null,
-            $memberData['locale'] ?? null,
-            $memberData['picture'] ?? null
+        return new Serializer(
+            [
+                new ObjectNormalizer(null, null, null, new PhpDocExtractor()),
+                new ArrayDenormalizer()
+            ],
+            [
+                new JsonEncoder()
+            ]
         );
     }
 }

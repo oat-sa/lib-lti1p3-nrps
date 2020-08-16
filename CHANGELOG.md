@@ -5,3 +5,4 @@ CHANGELOG
 -----
 
 * Provided NRPS client
+* Ensured IMS NRPS tool certification compliance

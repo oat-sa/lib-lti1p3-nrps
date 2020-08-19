@@ -80,12 +80,12 @@ class Membership implements MembershipInterface
 
     public function hasNext(): bool
     {
-        return (bool) strpos($this->relationLink, sprintf('rel="%s"', static::REL_NEXT));
+        return (bool) strpos($this->relationLink, sprintf('rel=%s', static::REL_NEXT));
     }
 
     public function hasDifferences(): bool
     {
-        return (bool) strpos($this->relationLink, sprintf('rel="%s"', static::REL_DIFFERENCES));
+        return (bool) strpos($this->relationLink, sprintf('rel=%s', static::REL_DIFFERENCES));
     }
 
     public function jsonSerialize(): array

@@ -20,11 +20,28 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Membership;
+namespace OAT\Library\Lti1p3Nrps\Model\Membership;
 
-interface MembershipSerializerInterface
+use OAT\Library\Lti1p3Nrps\Model\Member\MemberCollectionInterface;
+use OAT\Library\Lti1p3Nrps\Model\Context\ContextInterface;
+use JsonSerializable;
+
+interface MembershipInterface extends JsonSerializable
 {
-    public function serialize(MembershipInterface $membership): string ;
+    public const REL_NEXT = 'next';
+    public const REL_DIFFERENCES = 'differences';
 
-    public function deserialize(string $jsonData): MembershipInterface;
+    public function getIdentifier(): string;
+
+    public function getMembers(): MemberCollectionInterface;
+
+    public function getContext(): ContextInterface;
+
+    public function getRelationLink(): ?string ;
+
+    public function setRelationLink(string $relationLink): MembershipInterface;
+
+    public function hasNext(): bool;
+
+    public function hasDifferences(): bool;
 }

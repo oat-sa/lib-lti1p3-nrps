@@ -20,16 +20,24 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Member;
+namespace OAT\Library\Lti1p3Nrps\Model\Member;
 
-use Countable;
-use IteratorAggregate;
+use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
+use JsonSerializable;
 
-interface MemberCollectionInterface extends Countable, IteratorAggregate
+interface MemberInterface extends JsonSerializable
 {
-    public function add(MemberInterface $member): MemberCollectionInterface;
+    public const STATUS_ACTIVE = 'Active';
+    public const STATUS_INACTIVE = 'Inactive';
+    public const STATUS_DELETED = 'Deleted';
 
-    public function get(string $identifier): MemberInterface;
+    public function getUserIdentity(): UserIdentityInterface;
 
-    public function has(string $identifier): bool;
+    public function getStatus(): string;
+
+    public function getRoles(): array;
+
+    public function getProperties(): array;
+
+    public function getProperty(string $propertyName, string $default = null): ?string;
 }

@@ -20,38 +20,33 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Context;
+namespace OAT\Library\Lti1p3Nrps\Factory\Context;
 
-class Context implements ContextInterface
+use OAT\Library\Lti1p3Core\Exception\LtiException;
+use OAT\Library\Lti1p3Nrps\Model\Context\Context;
+use OAT\Library\Lti1p3Nrps\Model\Context\ContextInterface;
+use Throwable;
+
+class ContextFactory implements ContextFactoryInterface
 {
-    /** @var string */
-    private $identifier;
-
-    /** @var string|null */
-    private $label;
-
-    /** @var string|null */
-    private $title;
-
-    public function __construct(string $identifier, string $label = null, string $title = null)
+    /**
+     * @throws LtiException
+     */
+    public function create(array $data): ContextInterface
     {
-        $this->identifier = $identifier;
-        $this->label = $label;
-        $this->title = $title;
-    }
+        try {
+            return new Context(
+                $data['id'],
+                $data['label'] ?? null,
+                $data['title'] ?? null
+            );
 
-    public function getIdentifier(): string
-    {
-        return $this->identifier;
-    }
-
-    public function getLabel(): ?string
-    {
-        return $this->label;
-    }
-
-    public function getTitle(): ?string
-    {
-        return $this->title;
+        } catch (Throwable $exception) {
+            throw new LtiException(
+                sprintf('Error during context creation: %s', $exception->getMessage()),
+                $exception->getCode(),
+                $exception
+            );
+        }
     }
 }

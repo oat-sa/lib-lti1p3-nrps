@@ -27,9 +27,9 @@ use OAT\Library\Lti1p3Core\Message\Claim\NrpsClaim;
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClient;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClientInterface;
-use OAT\Library\Lti1p3Nrps\Membership\MembershipSerializer;
-use OAT\Library\Lti1p3Nrps\Membership\MembershipSerializerInterface;
-use OAT\Library\Lti1p3Nrps\Membership\MembershipInterface;
+use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
+use OAT\Library\Lti1p3Nrps\Serializer\MembershipJsonSerializer;
+use OAT\Library\Lti1p3Nrps\Serializer\MembershipJsonSerializerInterface;
 use Throwable;
 
 /**
@@ -39,17 +39,18 @@ class MembershipServiceClient
 {
     public const AUTHORIZATION_SCOPE_MEMBERSHIP = 'https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly';
     public const CONTENT_TYPE_MEMBERSHIP = 'application/vnd.ims.lti-nrps.v2.membershipcontainer+json';
+    public const HEADER_LINK = 'Link';
 
     /** @var ServiceClientInterface */
     private $client;
 
-    /** @var MembershipSerializerInterface */
+    /** @var MembershipJsonSerializerInterface */
     private $serializer;
 
-    public function __construct(ServiceClientInterface $client = null, MembershipSerializerInterface $serializer = null)
+    public function __construct(ServiceClientInterface $client = null, MembershipJsonSerializerInterface $serializer = null)
     {
         $this->client = $client ?? new ServiceClient();
-        $this->serializer = $serializer ?? new MembershipSerializer();
+        $this->serializer = $serializer ?? new MembershipJsonSerializer();
     }
 
     /**
@@ -71,11 +72,13 @@ class MembershipServiceClient
                     'headers' => ['Accept' => static::CONTENT_TYPE_MEMBERSHIP]
                 ],
                 [
-                    self::AUTHORIZATION_SCOPE_MEMBERSHIP
+                    static::AUTHORIZATION_SCOPE_MEMBERSHIP
                 ]
             );
 
-            return $this->serializer->deserialize($response->getBody()->__toString());
+            return $this->serializer
+                ->deserialize($response->getBody()->__toString())
+                ->setRelationLink($response->getHeaderLine(static::HEADER_LINK));
 
         } catch (Throwable $exception) {
             throw new LtiException(

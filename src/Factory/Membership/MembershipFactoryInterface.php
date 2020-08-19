@@ -20,13 +20,11 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Context;
+namespace OAT\Library\Lti1p3Nrps\Factory\Membership;
 
-interface ContextInterface
+use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
+
+interface MembershipFactoryInterface
 {
-    public function getIdentifier(): string;
-
-    public function getLabel(): ?string;
-
-    public function getTitle(): ?string;
+    public function create(array $data): MembershipInterface;
 }

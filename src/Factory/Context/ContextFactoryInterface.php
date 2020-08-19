@@ -20,23 +20,11 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Member;
+namespace OAT\Library\Lti1p3Nrps\Factory\Context;
 
-use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
+use OAT\Library\Lti1p3Nrps\Model\Context\ContextInterface;
 
-interface MemberInterface
+interface ContextFactoryInterface
 {
-    public const STATUS_ACTIVE = 'Active';
-    public const STATUS_INACTIVE = 'Inactive';
-    public const STATUS_DELETED = 'Deleted';
-
-    public function getUserIdentity(): UserIdentityInterface;
-
-    public function getStatus(): ?string;
-
-    public function getRoles(): array;
-
-    public function getAdditionalProperties(): array;
-
-    public function getAdditionalProperty(string $propertyName, string $default = null): ?string;
+    public function create(array $data): ContextInterface;
 }

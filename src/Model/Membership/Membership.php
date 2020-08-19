@@ -20,10 +20,10 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Membership;
+namespace OAT\Library\Lti1p3Nrps\Model\Membership;
 
-use OAT\Library\Lti1p3Nrps\Context\ContextInterface;
-use OAT\Library\Lti1p3Nrps\Member\MemberCollectionInterface;
+use OAT\Library\Lti1p3Nrps\Model\Member\MemberCollectionInterface;
+use OAT\Library\Lti1p3Nrps\Model\Context\ContextInterface;
 
 class Membership implements MembershipInterface
 {
@@ -36,11 +36,19 @@ class Membership implements MembershipInterface
     /** @var MemberCollectionInterface */
     private $members;
 
-    public function __construct(string $identifier, ContextInterface $context, MemberCollectionInterface $members)
-    {
+    /** @var string|null */
+    private $relationLink;
+
+    public function __construct(
+        string $identifier,
+        ContextInterface $context,
+        MemberCollectionInterface $members,
+        string $relationLink = null
+    ) {
         $this->identifier = $identifier;
         $this->context = $context;
         $this->members = $members;
+        $this->relationLink = $relationLink;
     }
 
     public function getIdentifier(): string
@@ -56,5 +64,36 @@ class Membership implements MembershipInterface
     public function getMembers(): MemberCollectionInterface
     {
         return $this->members;
+    }
+
+    public function getRelationLink(): ?string
+    {
+        return $this->relationLink;
+    }
+
+    public function setRelationLink(string $relationLink): MembershipInterface
+    {
+        $this->relationLink = $relationLink;
+
+        return $this;
+    }
+
+    public function hasNext(): bool
+    {
+        return (bool) strpos($this->relationLink, sprintf('rel="%s"', static::REL_NEXT));
+    }
+
+    public function hasDifferences(): bool
+    {
+        return (bool) strpos($this->relationLink, sprintf('rel="%s"', static::REL_DIFFERENCES));
+    }
+
+    public function jsonSerialize(): array
+    {
+        return array_filter([
+            'id' => $this->identifier,
+            'context' => $this->context,
+            'members' => $this->members
+        ]);
     }
 }

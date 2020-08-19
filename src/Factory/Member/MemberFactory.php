@@ -20,19 +20,17 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Membership;
+namespace OAT\Library\Lti1p3Nrps\Factory\Member;
 
 use OAT\Library\Lti1p3Core\Exception\LtiException;
 use OAT\Library\Lti1p3Core\User\UserIdentityFactory;
 use OAT\Library\Lti1p3Core\User\UserIdentityFactoryInterface;
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
-use OAT\Library\Lti1p3Nrps\Context\Context;
-use OAT\Library\Lti1p3Nrps\Member\Member;
-use OAT\Library\Lti1p3Nrps\Member\MemberCollection;
-use OAT\Library\Lti1p3Nrps\Member\MemberInterface;
+use OAT\Library\Lti1p3Nrps\Model\Member\Member;
+use OAT\Library\Lti1p3Nrps\Model\Member\MemberInterface;
 use Throwable;
 
-class MembershipFactory implements MembershipFactoryInterface
+class MemberFactory implements MemberFactoryInterface
 {
     /** @var UserIdentityFactoryInterface */
     private $userIdentityFactory;
@@ -45,35 +43,19 @@ class MembershipFactory implements MembershipFactoryInterface
     /**
      * @throws LtiException
      */
-    public function create(array $data): MembershipInterface
+    public function create(array $data): MemberInterface
     {
         try {
-            $context = new Context(
-                $data['context']['id'],
-                $data['context']['label'] ?? null,
-                $data['context']['title'] ?? null
+            return new Member(
+                $this->createMemberUserIdentity($data),
+                $data['status'] ?? MemberInterface::STATUS_ACTIVE,
+                $data['roles'] ?? [],
+                $data
             );
-
-            $memberCollection = new MemberCollection();
-
-            foreach ($data['members'] ?? [] as $memberData) {
-                $memberUserIdentity = $this->createMemberUserIdentity($memberData);
-
-                $member = new Member(
-                    $memberUserIdentity,
-                    $memberData['status'] ?? MemberInterface::STATUS_ACTIVE,
-                    $memberData['roles'] ?? [],
-                    array_diff_assoc($memberData, $memberUserIdentity->normalize())
-                );
-
-                $memberCollection->add($member);
-            }
-
-            return new Membership($data['id'], $context, $memberCollection);
 
         } catch (Throwable $exception) {
             throw new LtiException(
-                sprintf('Error during membership creation: %s', $exception->getMessage()),
+                sprintf('Error during member creation: %s', $exception->getMessage()),
                 $exception->getCode(),
                 $exception
             );

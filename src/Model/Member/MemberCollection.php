@@ -20,7 +20,7 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Member;
+namespace OAT\Library\Lti1p3Nrps\Model\Member;
 
 use ArrayIterator;
 use OAT\Library\Lti1p3Core\Exception\LtiException;
@@ -72,5 +72,10 @@ class MemberCollection implements MemberCollectionInterface
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->members);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return array_values($this->getIterator()->getArrayCopy());
     }
 }

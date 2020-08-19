@@ -20,16 +20,15 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Membership;
+namespace OAT\Library\Lti1p3Nrps\Model\Context;
 
-use OAT\Library\Lti1p3Nrps\Context\ContextInterface;
-use OAT\Library\Lti1p3Nrps\Member\MemberCollectionInterface;
+use JsonSerializable;
 
-interface MembershipInterface
+interface ContextInterface extends JsonSerializable
 {
     public function getIdentifier(): string;
 
-    public function getContext(): ContextInterface;
+    public function getLabel(): ?string;
 
-    public function getMembers(): MemberCollectionInterface;
+    public function getTitle(): ?string;
 }

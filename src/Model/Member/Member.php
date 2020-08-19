@@ -20,7 +20,7 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Member;
+namespace OAT\Library\Lti1p3Nrps\Model\Member;
 
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
 
@@ -29,25 +29,25 @@ class Member implements MemberInterface
     /** @var UserIdentityInterface */
     private $userIdentity;
 
-    /** @var string|null */
+    /** @var string */
     private $status;
 
     /** @var string[] */
     private $roles;
 
     /** @var string[] */
-    private $additionalProperties;
+    private $properties;
 
     public function __construct(
         UserIdentityInterface $userIdentity,
-        string $status = null,
-        array $roles = [],
-        array $additionalProperties = []
+        string $status,
+        array $roles,
+        array $properties = []
     ) {
         $this->userIdentity = $userIdentity;
         $this->status = $status;
         $this->roles = $roles;
-        $this->additionalProperties = $additionalProperties;
+        $this->properties = $properties;
     }
 
     public function getUserIdentity(): UserIdentityInterface
@@ -55,7 +55,7 @@ class Member implements MemberInterface
         return $this->userIdentity;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): string
     {
         return $this->status;
     }
@@ -65,13 +65,18 @@ class Member implements MemberInterface
         return $this->roles;
     }
 
-    public function getAdditionalProperties(): array
+    public function getProperties(): array
     {
-        return $this->additionalProperties;
+        return $this->properties;
     }
 
-    public function getAdditionalProperty(string $propertyName, ?string $default = null): ?string
+    public function getProperty(string $propertyName, string $default = null): ?string
     {
-        return $this->additionalProperties[$propertyName] ?? $default;
+        return $this->properties['$propertyName'] ?? $default;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return array_filter($this->properties);
     }
 }

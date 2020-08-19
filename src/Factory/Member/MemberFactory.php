@@ -26,6 +26,8 @@ use OAT\Library\Lti1p3Core\Exception\LtiException;
 use OAT\Library\Lti1p3Core\User\UserIdentityFactory;
 use OAT\Library\Lti1p3Core\User\UserIdentityFactoryInterface;
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
+use OAT\Library\Lti1p3Nrps\Factory\Message\MessageFactory;
+use OAT\Library\Lti1p3Nrps\Factory\Message\MessageFactoryInterface;
 use OAT\Library\Lti1p3Nrps\Model\Member\Member;
 use OAT\Library\Lti1p3Nrps\Model\Member\MemberInterface;
 use Throwable;
@@ -35,9 +37,15 @@ class MemberFactory implements MemberFactoryInterface
     /** @var UserIdentityFactoryInterface */
     private $userIdentityFactory;
 
-    public function __construct(UserIdentityFactoryInterface $userIdentityFactory = null)
-    {
+    /** @var MessageFactoryInterface */
+    private $messageFactory;
+
+    public function __construct(
+        UserIdentityFactoryInterface $userIdentityFactory = null,
+        MessageFactoryInterface $messageFactory = null
+    ) {
         $this->userIdentityFactory = $userIdentityFactory ?? new UserIdentityFactory();
+        $this->messageFactory = $messageFactory ?? new MessageFactory();
     }
 
     /**
@@ -50,7 +58,8 @@ class MemberFactory implements MemberFactoryInterface
                 $this->createMemberUserIdentity($data),
                 $data['status'] ?? MemberInterface::STATUS_ACTIVE,
                 $data['roles'] ?? [],
-                $data
+                $data,
+                $data['message'] ? $this->messageFactory->create($data['message']) : null
             );
 
         } catch (Throwable $exception) {

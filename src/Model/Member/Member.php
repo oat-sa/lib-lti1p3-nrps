@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace OAT\Library\Lti1p3Nrps\Model\Member;
 
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
+use OAT\Library\Lti1p3Nrps\Model\Message\MessageInterface;
 
 class Member implements MemberInterface
 {
@@ -38,16 +39,21 @@ class Member implements MemberInterface
     /** @var string[] */
     private $properties;
 
+    /** @var MessageInterface|null */
+    private $message;
+
     public function __construct(
         UserIdentityInterface $userIdentity,
         string $status,
         array $roles,
-        array $properties = []
+        array $properties = [],
+        MessageInterface $message = null
     ) {
         $this->userIdentity = $userIdentity;
         $this->status = $status;
         $this->roles = $roles;
         $this->properties = $properties;
+        $this->message = $message;
     }
 
     public function getUserIdentity(): UserIdentityInterface
@@ -75,8 +81,13 @@ class Member implements MemberInterface
         return $this->properties['$propertyName'] ?? $default;
     }
 
+    public function getMessage(): ?MessageInterface
+    {
+        return $this->message;
+    }
+
     public function jsonSerialize(): array
     {
-        return array_filter($this->properties);
+        return array_filter($this->properties + ['message' => $this->message]);
     }
 }

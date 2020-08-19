@@ -24,6 +24,7 @@ namespace OAT\Library\Lti1p3Nrps\Service\Client;
 
 use OAT\Library\Lti1p3Core\Exception\LtiException;
 use OAT\Library\Lti1p3Core\Message\Claim\NrpsClaim;
+use OAT\Library\Lti1p3Core\Message\Claim\ResourceLinkClaim;
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClient;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClientInterface;
@@ -67,7 +68,7 @@ class MembershipServiceClient
             $response = $this->client->request(
                 $registration,
                 'GET',
-                $this->buildNrpsEndpointUrl($nrpsClaim, $role, $limit),
+                $this->buildNrpsEndpointUrl($nrpsClaim, null, $role, $limit),
                 [
                     'headers' => ['Accept' => static::CONTENT_TYPE_MEMBERSHIP]
                 ],
@@ -94,9 +95,64 @@ class MembershipServiceClient
         }
     }
 
-    private function buildNrpsEndpointUrl(NrpsClaim $nrpsClaim, string $role = null, int $limit = null): string
-    {
+    /**
+     * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service
+     * @throws LtiException
+     */
+    public function getResourceLinkMembership(
+        RegistrationInterface $registration,
+        NrpsClaim $nrpsClaim,
+        ResourceLinkClaim $resourceLinkClaim,
+        string $role = null,
+        int $limit = null
+    ): MembershipInterface {
+        try {
+            $response = $this->client->request(
+                $registration,
+                'GET',
+                $this->buildNrpsEndpointUrl($nrpsClaim, $resourceLinkClaim, $role, $limit),
+                [
+                    'headers' => ['Accept' => static::CONTENT_TYPE_MEMBERSHIP]
+                ],
+                [
+                    static::AUTHORIZATION_SCOPE_MEMBERSHIP
+                ]
+            );
+
+            $membership = $this->serializer->deserialize($response->getBody()->__toString());
+
+            $relationLink = $response->getHeaderLine(static::HEADER_LINK);
+            if(!empty($relationLink)) {
+                $membership->setRelationLink($relationLink);
+            }
+
+            return $membership;
+
+        } catch (Throwable $exception) {
+            throw new LtiException(
+                sprintf('Cannot get resource link membership: %s', $exception->getMessage()),
+                $exception->getCode(),
+                $exception
+            );
+        }
+    }
+
+    private function buildNrpsEndpointUrl(
+        NrpsClaim $nrpsClaim,
+        ResourceLinkClaim $resourceLinkClaim = null,
+        string $role = null,
+        int $limit = null
+    ): string {
         $url = $nrpsClaim->getContextMembershipsUrl();
+
+        if (null !== $resourceLinkClaim) {
+            $url = sprintf(
+                '%s%s%s',
+                $url,
+                strpos($url, '?') ? '&' : '?',
+                sprintf('rlid=%s', urlencode($resourceLinkClaim->getId()))
+            );
+        }
 
         if (null !== $role) {
             $url = sprintf(

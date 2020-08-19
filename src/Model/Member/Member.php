@@ -78,7 +78,7 @@ class Member implements MemberInterface
 
     public function getProperty(string $propertyName, string $default = null): ?string
     {
-        return $this->properties['$propertyName'] ?? $default;
+        return $this->properties[$propertyName] ?? $default;
     }
 
     public function getMessage(): ?MessageInterface

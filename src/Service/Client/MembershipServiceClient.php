@@ -76,9 +76,14 @@ class MembershipServiceClient
                 ]
             );
 
-            return $this->serializer
-                ->deserialize($response->getBody()->__toString())
-                ->setRelationLink($response->getHeaderLine(static::HEADER_LINK));
+            $membership = $this->serializer->deserialize($response->getBody()->__toString());
+
+            $relationLink = $response->getHeaderLine(static::HEADER_LINK);
+            if(!empty($relationLink)) {
+                $membership->setRelationLink($relationLink);
+            }
+
+            return $membership;
 
         } catch (Throwable $exception) {
             throw new LtiException(

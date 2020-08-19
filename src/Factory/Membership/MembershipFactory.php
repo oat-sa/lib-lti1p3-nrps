@@ -66,7 +66,11 @@ class MembershipFactory implements MembershipFactoryInterface
                 $memberCollection
             );
 
-            return $membership->setRelationLink($relationLink);
+            if (null !== $relationLink) {
+                $membership->setRelationLink($relationLink);
+            }
+
+            return $membership;
 
         } catch (Throwable $exception) {
             throw new LtiException(

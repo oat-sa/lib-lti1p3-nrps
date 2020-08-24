@@ -2,12 +2,12 @@
 
 
 use OAT\Library\Lti1p3Nrps\Factory\Membership\MembershipFactory;
-use OAT\Library\Lti1p3Nrps\Serializer\MembershipJsonSerializer;
+use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializer;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
 $factory = new MembershipFactory();
-$serializer = new MembershipJsonSerializer();
+$serializer = new MembershipSerializer();
 
 $data = '{
 "id" : "https://lms.example.com/sections/2923/memberships",

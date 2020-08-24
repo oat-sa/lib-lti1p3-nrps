@@ -59,7 +59,7 @@ class MemberFactory implements MemberFactoryInterface
                 $data['status'] ?? MemberInterface::STATUS_ACTIVE,
                 $data['roles'] ?? [],
                 $data,
-                isset($data['message']) ? $this->messageFactory->create($data['message']) : null
+                isset($data['message']) ? $this->messageFactory->create(current($data['message'])) : null
             );
 
         } catch (Throwable $exception) {

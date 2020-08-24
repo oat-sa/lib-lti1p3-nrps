@@ -24,7 +24,7 @@ namespace OAT\Library\Lti1p3Nrps\Serializer;
 
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 
-interface MembershipJsonSerializerInterface
+interface MembershipSerializerInterface
 {
     public function serialize(MembershipInterface $membership): string;
 

@@ -29,8 +29,8 @@ use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClient;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClientInterface;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
-use OAT\Library\Lti1p3Nrps\Serializer\MembershipJsonSerializer;
-use OAT\Library\Lti1p3Nrps\Serializer\MembershipJsonSerializerInterface;
+use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializer;
+use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializerInterface;
 use Throwable;
 
 /**
@@ -45,13 +45,15 @@ class MembershipServiceClient
     /** @var ServiceClientInterface */
     private $client;
 
-    /** @var MembershipJsonSerializerInterface */
+    /** @var MembershipSerializerInterface */
     private $serializer;
 
-    public function __construct(ServiceClientInterface $client = null, MembershipJsonSerializerInterface $serializer = null)
-    {
+    public function __construct(
+        ServiceClientInterface $client = null,
+        MembershipSerializerInterface $serializer = null
+    ) {
         $this->client = $client ?? new ServiceClient();
-        $this->serializer = $serializer ?? new MembershipJsonSerializer();
+        $this->serializer = $serializer ?? new MembershipSerializer();
     }
 
     /**

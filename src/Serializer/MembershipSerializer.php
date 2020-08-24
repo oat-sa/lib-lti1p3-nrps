@@ -27,7 +27,7 @@ use OAT\Library\Lti1p3Nrps\Factory\Membership\MembershipFactory;
 use OAT\Library\Lti1p3Nrps\Factory\Membership\MembershipFactoryInterface;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 
-class MembershipJsonSerializer implements MembershipJsonSerializerInterface
+class MembershipSerializer implements MembershipSerializerInterface
 {
     /** @var MembershipFactoryInterface */
     private $membershipFactory;
@@ -48,7 +48,7 @@ class MembershipJsonSerializer implements MembershipJsonSerializerInterface
 
         if (JSON_ERROR_NONE !== json_last_error()) {
             throw new LtiException(
-                sprintf('Error during membership deserialization (json_decode): %s', json_last_error_msg())
+                sprintf('Error during membership deserialization: %s', json_last_error_msg())
             );
         }
 

@@ -31,17 +31,14 @@ use OAT\Library\Lti1p3Core\Service\Client\ServiceClientInterface;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializer;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializerInterface;
+use OAT\Library\Lti1p3Nrps\Service\MembershipServiceInterface;
 use Throwable;
 
 /**
  * @see https://www.imsglobal.org/spec/lti-nrps/v2p0
  */
-class MembershipServiceClient
+class MembershipServiceClient implements MembershipServiceInterface
 {
-    public const AUTHORIZATION_SCOPE_MEMBERSHIP = 'https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly';
-    public const CONTENT_TYPE_MEMBERSHIP = 'application/vnd.ims.lti-nrps.v2.membershipcontainer+json';
-    public const HEADER_LINK = 'Link';
-
     /** @var ServiceClientInterface */
     private $client;
 
@@ -67,27 +64,13 @@ class MembershipServiceClient
         int $limit = null
     ): MembershipInterface {
         try {
-            $response = $this->client->request(
+            return $this->getMembership(
                 $registration,
-                'GET',
-                $this->buildNrpsEndpointUrl($nrpsClaim, null, $role, $limit),
-                [
-                    'headers' => ['Accept' => static::CONTENT_TYPE_MEMBERSHIP]
-                ],
-                [
-                    static::AUTHORIZATION_SCOPE_MEMBERSHIP
-                ]
+                $nrpsClaim,
+                null,
+                $role,
+                $limit
             );
-
-            $membership = $this->serializer->deserialize($response->getBody()->__toString());
-
-            $relationLink = $response->getHeaderLine(static::HEADER_LINK);
-            if(!empty($relationLink)) {
-                $membership->setRelationLink($relationLink);
-            }
-
-            return $membership;
-
         } catch (Throwable $exception) {
             throw new LtiException(
                 sprintf('Cannot get context membership: %s', $exception->getMessage()),
@@ -109,27 +92,13 @@ class MembershipServiceClient
         int $limit = null
     ): MembershipInterface {
         try {
-            $response = $this->client->request(
+            return $this->getMembership(
                 $registration,
-                'GET',
-                $this->buildNrpsEndpointUrl($nrpsClaim, $resourceLinkClaim, $role, $limit),
-                [
-                    'headers' => ['Accept' => static::CONTENT_TYPE_MEMBERSHIP]
-                ],
-                [
-                    static::AUTHORIZATION_SCOPE_MEMBERSHIP
-                ]
+                $nrpsClaim,
+                $resourceLinkClaim,
+                $role,
+                $limit
             );
-
-            $membership = $this->serializer->deserialize($response->getBody()->__toString());
-
-            $relationLink = $response->getHeaderLine(static::HEADER_LINK);
-            if(!empty($relationLink)) {
-                $membership->setRelationLink($relationLink);
-            }
-
-            return $membership;
-
         } catch (Throwable $exception) {
             throw new LtiException(
                 sprintf('Cannot get resource link membership: %s', $exception->getMessage()),
@@ -137,6 +106,35 @@ class MembershipServiceClient
                 $exception
             );
         }
+    }
+
+    private function getMembership(
+        RegistrationInterface $registration,
+        NrpsClaim $nrpsClaim,
+        ResourceLinkClaim $resourceLinkClaim = null,
+        string $role = null,
+        int $limit = null
+    ): MembershipInterface {
+        $response = $this->client->request(
+            $registration,
+            'GET',
+            $this->buildNrpsEndpointUrl($nrpsClaim, $resourceLinkClaim, $role, $limit),
+            [
+                'headers' => ['Accept' => static::CONTENT_TYPE_MEMBERSHIP]
+            ],
+            [
+                static::AUTHORIZATION_SCOPE_MEMBERSHIP
+            ]
+        );
+
+        $membership = $this->serializer->deserialize($response->getBody()->__toString());
+
+        $relationLink = $response->getHeaderLine(static::HEADER_LINK);
+        if (!empty($relationLink)) {
+            $membership->setRelationLink($relationLink);
+        }
+
+        return $membership;
     }
 
     private function buildNrpsEndpointUrl(

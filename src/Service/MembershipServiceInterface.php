@@ -20,28 +20,11 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Model\Membership;
+namespace OAT\Library\Lti1p3Nrps\Service;
 
-use OAT\Library\Lti1p3Nrps\Model\Member\MemberCollectionInterface;
-use OAT\Library\Lti1p3Nrps\Model\Context\ContextInterface;
-use JsonSerializable;
-
-interface MembershipInterface extends JsonSerializable
+interface MembershipServiceInterface
 {
-    public const REL_NEXT = 'next';
-    public const REL_DIFFERENCES = 'differences';
-
-    public function getIdentifier(): string;
-
-    public function getMembers(): MemberCollectionInterface;
-
-    public function getContext(): ContextInterface;
-
-    public function getRelationLink(): ?string;
-
-    public function setRelationLink(string $relationLink): MembershipInterface;
-
-    public function hasNext(): bool;
-
-    public function hasDifferences(): bool;
+    public const AUTHORIZATION_SCOPE_MEMBERSHIP = 'https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly';
+    public const CONTENT_TYPE_MEMBERSHIP = 'application/vnd.ims.lti-nrps.v2.membershipcontainer+json';
+    public const HEADER_LINK = 'Link';
 }

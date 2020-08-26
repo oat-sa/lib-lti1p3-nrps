@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace OAT\Library\Lti1p3Nrps\Tests\Traits;
 
 use OAT\Library\Lti1p3Core\Link\ResourceLink\ResourceLinkInterface;
+use OAT\Library\Lti1p3Core\Message\Claim\NrpsClaim;
 use OAT\Library\Lti1p3Core\Message\LtiMessageInterface;
 use OAT\Library\Lti1p3Core\Tests\Traits\DomainTestingTrait;
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
@@ -67,12 +68,28 @@ trait NrpsDomainTestingTrait
         array $properties = ['propertyName' => 'propertyValue'],
         MessageInterface $message = null
     ): MemberInterface {
+
+        $userIdentity = $userIdentity ?? $this->createTestUserIdentity();
+        $message = $message ?? $this->createTestMessage();
+
         return new Member(
-            $userIdentity ?? $this->createTestUserIdentity(),
+            $userIdentity,
             $status,
             $roles,
-            $properties,
-            $message ?? $this->createTestMessage()
+            $properties + [
+                'status' => $status,
+                'roles' => $roles,
+                'user_id' => $userIdentity->getIdentifier(),
+                'name' => $userIdentity->getName(),
+                'email' => $userIdentity->getEmail(),
+                'given_name' => $userIdentity->getGivenName(),
+                'family_name' => $userIdentity->getFamilyName(),
+                'middle_name' => $userIdentity->getMiddleName(),
+                'locale' => $userIdentity->getLocale(),
+                'picture' => $userIdentity->getPicture(),
+                'message' => [$message->getData()]
+            ],
+            $message
         );
     }
 
@@ -97,5 +114,12 @@ trait NrpsDomainTestingTrait
             $memberCollection ?? $this->createTestMemberCollection(),
             $relationLink
         );
+    }
+
+    private function createTestNrpsClaim(
+        string $url = 'http://example.com/membership',
+        array $versions = ['1.0', '2.0']
+    ): NrpsClaim {
+        return new NrpsClaim($url, $versions);
     }
 }

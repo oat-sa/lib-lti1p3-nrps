@@ -45,10 +45,7 @@ class ContextFactoryTest extends TestCase
     {
         $membership = $this->createTestMembership();
 
-        $this->assertEquals(
-            '{"id":"identifier","context":{"id":"identifier","label":"label","title":"title"},"members":[{"propertyName":"propertyValue","message":{"https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/message_type":"LtiResourceLinkRequest","https:\/\/purl.imsglobal.org\/spec\/lti-bo\/claim\/basicoutcome":{"lis_result_sourcedid":"sourcedId","lis_outcome_service_url":"http:\/\/example.com\/outcome"}}},{"propertyName":"propertyValue","message":{"https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/message_type":"LtiResourceLinkRequest","https:\/\/purl.imsglobal.org\/spec\/lti-bo\/claim\/basicoutcome":{"lis_result_sourcedid":"sourcedId","lis_outcome_service_url":"http:\/\/example.com\/outcome"}}},{"propertyName":"propertyValue","message":{"https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/message_type":"LtiResourceLinkRequest","https:\/\/purl.imsglobal.org\/spec\/lti-bo\/claim\/basicoutcome":{"lis_result_sourcedid":"sourcedId","lis_outcome_service_url":"http:\/\/example.com\/outcome"}}}]}',
-            $this->subject->serialize($membership)
-        );
+        $this->assertEquals(json_encode($membership), $this->subject->serialize($membership));
     }
 
     public function testDeserializeSuccess(): void

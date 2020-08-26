@@ -65,7 +65,23 @@ class MemberTest extends TestCase
 
     public function testGetProperties(): void
     {
-        $this->assertEquals(['propertyName' => 'propertyValue'], $this->subject->getProperties());
+        $this->assertEquals(
+            [
+                'status' => 'Active',
+                'roles' => ['Learner'],
+                'propertyName' => 'propertyValue',
+                'user_id' => 'userIdentifier',
+                'name' => 'userName',
+                'email' => 'userEmail',
+                'given_name' => 'userGivenName',
+                'family_name' => 'userFamilyName',
+                'middle_name' => 'userMiddleName',
+                'locale' => 'userLocale',
+                'picture' => 'userPicture',
+                'message' =>[$this->message->getData()]
+            ],
+            $this->subject->getProperties()
+        );
     }
 
     public function testGetProperty(): void
@@ -85,7 +101,17 @@ class MemberTest extends TestCase
         $this->assertEquals(
             [
                 'propertyName' => 'propertyValue',
-                'message' => $this->subject->getMessage(),
+                'status' => 'Active',
+                'roles' => ['Learner'],
+                'user_id' => 'userIdentifier',
+                'name' => 'userName',
+                'email' => 'userEmail',
+                'given_name' => 'userGivenName',
+                'family_name' => 'userFamilyName',
+                'middle_name' => 'userMiddleName',
+                'locale' => 'userLocale',
+                'picture' => 'userPicture',
+                'message' => [$this->message->getData()],
             ],
             $this->subject->jsonSerialize()
         );

@@ -28,7 +28,7 @@ use OAT\Library\Lti1p3Core\Service\Server\Validator\AccessTokenRequestValidator;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializer;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializerInterface;
 use OAT\Library\Lti1p3Nrps\Service\MembershipServiceInterface;
-use OAT\Library\Lti1p3Nrps\Service\Server\Repository\MembershipServiceServerBuilderInterface;
+use OAT\Library\Lti1p3Nrps\Service\Server\Builder\MembershipServiceServerBuilderInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;

@@ -23,7 +23,7 @@ First, you need to provide a [MembershipServiceServerBuilderInterface](../src/Se
 <?php
 
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
-use OAT\Library\Lti1p3Nrps\Service\Server\Repository\MembershipServiceServerBuilderInterface;
+use OAT\Library\Lti1p3Nrps\Service\Server\Builder\MembershipServiceServerBuilderInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /** @var MembershipServiceServerBuilderInterface $builder */

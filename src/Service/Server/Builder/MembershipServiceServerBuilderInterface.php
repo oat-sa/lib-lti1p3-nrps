@@ -20,7 +20,7 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Service\Server\Repository;
+namespace OAT\Library\Lti1p3Nrps\Service\Server\Builder;
 
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;

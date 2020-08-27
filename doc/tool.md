@@ -52,7 +52,7 @@ foreach ($membership->getMembers() as $member) {
     echo $member->getUserIdentity()->getIdentifier();
 }
 
-// Membership analysed relation link (to know if next or differences)
+// Membership analysed relation link (to know presence of next or differences)
 if ($membership->hasNext()) {
     // handle retrieval of the next members
 }

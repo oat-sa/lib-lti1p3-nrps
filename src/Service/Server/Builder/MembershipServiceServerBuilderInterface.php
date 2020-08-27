@@ -26,7 +26,20 @@ use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-interface MembershipGeneratorInterface
+interface MembershipServiceServerBuilderInterface
 {
-    public function generate(RegistrationInterface $registration, ServerRequestInterface $request): MembershipInterface;
+    public function buildContextMembership(
+        RegistrationInterface $registration,
+        ServerRequestInterface $request,
+        string $role = null,
+        string $limit = null
+    ): MembershipInterface;
+
+    public function buildResourceLinkMembership(
+        RegistrationInterface $registration,
+        ServerRequestInterface $request,
+        string $resourceLinkIdentifier,
+        string $role = null,
+        string $limit = null
+    ): MembershipInterface;
 }

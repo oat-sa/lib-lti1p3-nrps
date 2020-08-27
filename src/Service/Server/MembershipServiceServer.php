@@ -28,7 +28,7 @@ use OAT\Library\Lti1p3Core\Service\Server\Validator\AccessTokenRequestValidator;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializer;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializerInterface;
 use OAT\Library\Lti1p3Nrps\Service\MembershipServiceInterface;
-use OAT\Library\Lti1p3Nrps\Service\Server\Repository\MembershipGeneratorInterface;
+use OAT\Library\Lti1p3Nrps\Service\Server\Repository\MembershipServiceServerBuilderInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -43,8 +43,8 @@ class MembershipServiceServer implements MembershipServiceInterface
     /** @var AccessTokenRequestValidator */
     private $validator;
 
-    /** @var MembershipGeneratorInterface */
-    private $generator;
+    /** @var MembershipServiceServerBuilderInterface */
+    private $builder;
 
     /** @var MembershipSerializerInterface */
     private $serializer;
@@ -57,13 +57,13 @@ class MembershipServiceServer implements MembershipServiceInterface
 
     public function __construct(
         AccessTokenRequestValidator $validator,
-        MembershipGeneratorInterface $generator,
+        MembershipServiceServerBuilderInterface $builder,
         MembershipSerializerInterface $serializer = null,
         ResponseFactory $factory = null,
         LoggerInterface $logger = null
     ) {
         $this->validator = $validator;
-        $this->generator = $generator;
+        $this->builder = $builder;
         $this->serializer = $serializer ?? new MembershipSerializer();
         $this->factory = $factory ?? new HttplugFactory();
         $this->logger = $logger ?? new NullLogger();
@@ -80,7 +80,28 @@ class MembershipServiceServer implements MembershipServiceInterface
         }
 
         try {
-            $membership = $this->generator->generate($validationResult->getRegistration(), $request);
+            parse_str($request->getUri()->getQuery(), $parameters);
+
+            $rlId = $parameters['rlid'] ?? null;
+            $role = $parameters['role'] ?? null;
+            $limit = $parameters['limit'] ?? null;
+
+            if (null !== $rlId) {
+                $membership = $this->builder->buildResourceLinkMembership(
+                    $validationResult->getRegistration(),
+                    $request,
+                    $rlId,
+                    $role,
+                    $limit
+                );
+            } else {
+                $membership = $this->builder->buildContextMembership(
+                    $validationResult->getRegistration(),
+                    $request,
+                    $role,
+                    $limit
+                );
+            }
 
             $responseBody = $this->serializer->serialize($membership);
             $responseHeaders = [

@@ -1,13 +1,19 @@
 # LTI 1.3 NRPS Library
 
-> PHP library for [LTI 1.3 Names and Role Provisioning Services](https://www.imsglobal.org/spec/lti-nrps/v2p0) implementations as platforms and / or as tools.
+> PHP library for [LTI 1.3 Names and Role Provisioning Services](https://www.imsglobal.org/spec/lti-nrps/v2p0) implementations as platforms and / or as tools, based on [lti1p3-core library](https://github.com/oat-sa/lib-lti1p3-core).
 
 # Table of contents
 
 - [Specifications](#specifications)
 - [Installation](#installation)
-- [Concepts](#concepts)
+- [Tutorials](#tutorials)
 - [Tests](#tests)
+
+## Specifications
+
+- [LTI 1.3 Names and Role Provisioning Services](https://www.imsglobal.org/spec/lti-nrps/v2p0)
+- [IMS LTI 1.3 Core](http://www.imsglobal.org/spec/lti/v1p3)
+- [IMS Security](https://www.imsglobal.org/spec/security/v1p0)
 
 ## Installation
 
@@ -15,28 +21,20 @@
 $ composer require oat-sa/lib-lti1p3-nrps
 ```
 
-## Specifications
+## Tutorials
 
-- [LTI 1.3 Names and Role Provisioning Services](https://www.imsglobal.org/spec/lti-nrps/v2p0)
-- [IMS Security](https://www.imsglobal.org/spec/security/v1p0)
+Before using this library, you must first  [configure the lti1p3-core library](https://github.com/oat-sa/lib-lti1p3-core#quick-start).
 
-## Concepts
+You can then find below some tutorials, presented by topics.
 
-You can find below the implementations of the main concepts of the [LTI Assignment and Grade Services](https://www.imsglobal.org/spec/lti-ags/v2p0) specification.
+### Tool
 
-###  Models
+- how to [use the NRPS library as a tool](doc/tool.md)
 
-- [LineItem](src/Model/LineItem.php)
-- [Score](src/Model/Score.php)
+### Platform
 
-### Service
+- how to [use the NRPS library as a platform](doc/platform.md)
 
-#### Tool
-
-##### ScoreServiceClient
-- Code: [ScoreServiceClient](src/Service/Client/ScoreServiceClient.php)
-- Documentation: [Score publish service documentation ](https://www.imsglobal.org/spec/lti-ags/v2p0#score-publish-service)
-- Openapi POST score contract: [openapi](https://www.imsglobal.org/spec/lti-ags/v2p0/openapi/#/default/Scores.POST)
 
 ## Tests
 

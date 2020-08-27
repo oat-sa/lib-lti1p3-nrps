@@ -54,9 +54,9 @@ trait NrpsDomainTestingTrait
     {
         return new Message($data ?? [
             LtiMessageInterface::CLAIM_LTI_MESSAGE_TYPE => ResourceLinkInterface::TYPE,
-                LtiMessageInterface::CLAIM_LTI_BASIC_OUTCOME => [
-            'lis_result_sourcedid' => 'sourcedId',
-            'lis_outcome_service_url' => 'http://example.com/outcome'
+            LtiMessageInterface::CLAIM_LTI_BASIC_OUTCOME => [
+                'lis_result_sourcedid' => 'sourcedId',
+                'lis_outcome_service_url' => 'http://example.com/outcome'
             ]
         ]);
     }

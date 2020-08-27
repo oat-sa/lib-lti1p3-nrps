@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Nrps\Model\Membership;
 
+use OAT\Library\Lti1p3Nrps\Model\Member\Member;
 use OAT\Library\Lti1p3Nrps\Model\Member\MemberCollectionInterface;
 use OAT\Library\Lti1p3Nrps\Model\Context\ContextInterface;
 use JsonSerializable;
@@ -33,6 +34,7 @@ interface MembershipInterface extends JsonSerializable
 
     public function getIdentifier(): string;
 
+    /** @return Member[]|MemberCollectionInterface */
     public function getMembers(): MemberCollectionInterface;
 
     public function getContext(): ContextInterface;

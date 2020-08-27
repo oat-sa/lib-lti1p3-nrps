@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Nrps\Tests\Unit\Model\Membership;
 
+use OAT\Library\Lti1p3Nrps\Model\Member\MemberInterface;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use OAT\Library\Lti1p3Nrps\Tests\Traits\NrpsDomainTestingTrait;
 use PHPUnit\Framework\TestCase;
@@ -53,6 +54,10 @@ class MembershipTest extends TestCase
     public function testGetMembers(): void
     {
         $this->assertEquals(3, $this->subject->getMembers()->count());
+
+        foreach ($this->subject->getMembers() as $member) {
+            $this->assertInstanceOf(MemberInterface::class, $member);
+        }
 
         $this->assertTrue($this->subject->getMembers()->has('member1'));
         $this->assertTrue($this->subject->getMembers()->has('member2'));

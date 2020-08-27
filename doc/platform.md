@@ -73,6 +73,6 @@ $membershipServiceServer = new MembershipServiceServer($validator, $builder);
 /** @var ServerRequestInterface $request */
 $request = ...
 
-// Generates a response containing the build membership representation
+// Generates a response containing the built membership representation
 $response = $membershipServiceServer->handle($request);
 ```

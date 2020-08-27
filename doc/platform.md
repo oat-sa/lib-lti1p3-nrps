@@ -35,7 +35,7 @@ $builder = new class() implements MembershipServiceServerBuilderInterface
         string $role = null,
         string $limit = null
     ): MembershipInterface {
-        // Provide logic for building context membership for a given registration and request
+        // Logic for building context membership for a given registration and request
     }
 
     public function buildResourceLinkMembership(
@@ -45,7 +45,7 @@ $builder = new class() implements MembershipServiceServerBuilderInterface
         string $role = null,
         string $limit = null
     ): MembershipInterface {
-        // Provide logic for building resource link membership for a given registration, request and resource link
+        // Logic for building resource link membership for a given registration, request and resource link
     }
 }
 ```

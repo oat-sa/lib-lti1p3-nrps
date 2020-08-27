@@ -42,5 +42,7 @@ interface MemberInterface extends JsonSerializable
 
     public function getProperty(string $propertyName, string $default = null): ?string;
 
+    public function hasProperty(string $propertyName): bool;
+
     public function getMessage(): ?MessageInterface;
 }

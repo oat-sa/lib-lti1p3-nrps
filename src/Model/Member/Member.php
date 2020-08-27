@@ -81,6 +81,11 @@ class Member implements MemberInterface
         return $this->properties[$propertyName] ?? $default;
     }
 
+    public function hasProperty(string $propertyName): bool
+    {
+        return array_key_exists($propertyName,  $this->properties);
+    }
+
     public function getMessage(): ?MessageInterface
     {
         return $this->message;

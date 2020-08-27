@@ -91,6 +91,12 @@ class MemberTest extends TestCase
         $this->assertNull($this->subject->getProperty('invalid'));
     }
 
+    public function testHasProperty(): void
+    {
+        $this->assertTrue($this->subject->hasProperty('propertyName'));
+        $this->assertFalse($this->subject->hasProperty('invalid'));
+    }
+
     public function testGetMessage(): void
     {
         $this->assertEquals($this->message, $this->subject->getMessage());

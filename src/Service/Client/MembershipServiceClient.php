@@ -145,33 +145,16 @@ class MembershipServiceClient implements MembershipServiceInterface
     ): string {
         $url = $nrpsClaim->getContextMembershipsUrl();
 
-        if (null !== $resourceLinkClaim) {
-            $url = sprintf(
-                '%s%s%s',
-                $url,
-                strpos($url, '?') ? '&' : '?',
-                sprintf('rlid=%s', urlencode($resourceLinkClaim->getId()))
-            );
+        $parameters = array_filter([
+            'rlid' => $resourceLinkClaim ? $resourceLinkClaim->getId() : null,
+            'role' => $role,
+            'limit' => $limit,
+        ]);
+
+        if (empty($parameters)) {
+            return $url;
         }
 
-        if (null !== $role) {
-            $url = sprintf(
-                '%s%s%s',
-                $url,
-                strpos($url, '?') ? '&' : '?',
-                sprintf('role=%s', urlencode($role))
-            );
-        }
-
-        if (null !== $limit) {
-            $url = sprintf(
-                '%s%s%s',
-                $url,
-                strpos($url, '?') ? '&' : '?',
-                sprintf('limit=%s', $limit)
-            );
-        }
-
-        return $url;
+        return sprintf('%s%s%s', $url, strpos($url, '?') ? '&' : '?', http_build_query($parameters));
     }
 }

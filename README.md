@@ -11,7 +11,7 @@
 
 ## Specifications
 
-- [LTI 1.3 Names and Role Provisioning Services](https://www.imsglobal.org/spec/lti-nrps/v2p0)
+- [IMS LTI 1.3 Names and Role Provisioning Services](https://www.imsglobal.org/spec/lti-nrps/v2p0)
 - [IMS LTI 1.3 Core](http://www.imsglobal.org/spec/lti/v1p3)
 - [IMS Security](https://www.imsglobal.org/spec/security/v1p0)
 
@@ -25,7 +25,7 @@ $ composer require oat-sa/lib-lti1p3-nrps
 
 Before using this library, you must first  [configure the lti1p3-core library](https://github.com/oat-sa/lib-lti1p3-core#quick-start).
 
-You can then find below some tutorials, presented by topics.
+You can then find below usage tutorials, presented by topics.
 
 ### Tool
 
@@ -34,7 +34,6 @@ You can then find below some tutorials, presented by topics.
 ### Platform
 
 - how to [use the NRPS library as a platform](doc/platform.md)
-
 
 ## Tests
 

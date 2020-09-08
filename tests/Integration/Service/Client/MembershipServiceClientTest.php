@@ -25,6 +25,7 @@ namespace OAT\Library\Lti1p3Nrps\Tests\Integration\Service\Client;
 use Exception;
 use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
 use OAT\Library\Lti1p3Core\Message\Claim\ResourceLinkClaim;
+use OAT\Library\Lti1p3Core\Message\LtiMessageInterface;
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClientInterface;
 use OAT\Library\Lti1p3Core\Tests\Traits\NetworkTestingTrait;
@@ -53,6 +54,33 @@ class MembershipServiceClientTest extends TestCase
         $this->subject = new MembershipServiceClient($this->clientMock);
     }
 
+    public function testGetContextMembershipFromMessage(): void
+    {
+        $message = $this->createMock(LtiMessageInterface::class);
+
+        $registration = $this->createTestRegistration();
+        $claim = $this->createTestNrpsClaim();
+        $membership = $this->createTestMembership();
+
+        $message
+            ->expects($this->exactly(2))
+            ->method('getNrps')
+            ->willReturn($claim);
+
+        $this->prepareClientMock(
+            $registration,
+            $claim->getContextMembershipsUrl(),
+            json_encode($membership)
+        );
+
+        $result = $this->subject->getContextMembershipFromMessage($registration, $message);
+
+        $this->assertInstanceOf(MembershipInterface::class, $result);
+        $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
+        $this->assertEquals($membership->getContext(), $result->getContext());
+        $this->assertEquals($membership->getMembers(), $result->getMembers());
+    }
+
     public function testGetContextMembership(): void
     {
         $registration = $this->createTestRegistration();
@@ -65,7 +93,7 @@ class MembershipServiceClientTest extends TestCase
             json_encode($membership)
         );
 
-        $result = $this->subject->getContextMembership($registration, $claim);
+        $result = $this->subject->getContextMembership($registration, $claim->getContextMembershipsUrl());
 
         $this->assertInstanceOf(MembershipInterface::class, $result);
         $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
@@ -89,7 +117,7 @@ class MembershipServiceClientTest extends TestCase
             ]
         );
 
-        $result = $this->subject->getContextMembership($registration, $claim);
+        $result = $this->subject->getContextMembership($registration, $claim->getContextMembershipsUrl());
 
         $this->assertInstanceOf(MembershipInterface::class, $result);
         $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
@@ -113,7 +141,7 @@ class MembershipServiceClientTest extends TestCase
             json_encode($membership)
         );
 
-        $result = $this->subject->getContextMembership($registration, $claim, $role);
+        $result = $this->subject->getContextMembership($registration, $claim->getContextMembershipsUrl(), $role);
 
         $this->assertInstanceOf(MembershipInterface::class, $result);
         $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
@@ -134,7 +162,7 @@ class MembershipServiceClientTest extends TestCase
             json_encode($membership)
         );
 
-        $result = $this->subject->getContextMembership($registration, $claim, null, $limit);
+        $result = $this->subject->getContextMembership($registration, $claim->getContextMembershipsUrl(), null, $limit);
 
         $this->assertInstanceOf(MembershipInterface::class, $result);
         $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
@@ -156,7 +184,44 @@ class MembershipServiceClientTest extends TestCase
             json_encode($membership)
         );
 
-        $result = $this->subject->getContextMembership($registration, $claim, $role, $limit);
+        $result = $this->subject->getContextMembership($registration, $claim->getContextMembershipsUrl(), $role, $limit);
+
+        $this->assertInstanceOf(MembershipInterface::class, $result);
+        $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
+        $this->assertEquals($membership->getContext(), $result->getContext());
+        $this->assertEquals($membership->getMembers(), $result->getMembers());
+    }
+
+    public function testGetResourceLinkMembershipFromMessage(): void
+    {
+        $message = $this->createMock(LtiMessageInterface::class);
+
+        $registration = $this->createTestRegistration();
+        $nrpsClaim = $this->createTestNrpsClaim();
+        $resourceLinkClaim = $this->createTestResourceLinkClaim();
+        $membership = $this->createTestMembership();
+
+        $message
+            ->expects($this->exactly(2))
+            ->method('getNrps')
+            ->willReturn($nrpsClaim);
+
+        $message
+            ->expects($this->once())
+            ->method('getResourceLink')
+            ->willReturn($resourceLinkClaim);
+
+        $this->prepareClientMock(
+            $registration,
+            sprintf(
+                '%s?rlid=%s',
+                $nrpsClaim->getContextMembershipsUrl(),
+                $resourceLinkClaim->getId()
+            ),
+            json_encode($membership)
+        );
+
+        $result = $this->subject->getResourceLinkMembershipFromMessage($registration, $message);
 
         $this->assertInstanceOf(MembershipInterface::class, $result);
         $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
@@ -187,8 +252,8 @@ class MembershipServiceClientTest extends TestCase
 
         $result = $this->subject->getResourceLinkMembership(
             $registration,
-            $nrpsClaim,
-            $resourceLinkClaim,
+            $nrpsClaim->getContextMembershipsUrl(),
+            $resourceLinkClaim->getId(),
             $role,
             $limit
         );
@@ -197,6 +262,21 @@ class MembershipServiceClientTest extends TestCase
         $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
         $this->assertEquals($membership->getContext(), $result->getContext());
         $this->assertEquals($membership->getMembers(), $result->getMembers());
+    }
+
+    public function testGetContextMembershipFromMessageError(): void
+    {
+        $this->expectException(LtiExceptionInterface::class);
+        $this->expectExceptionMessage('Cannot get context membership from message: Provided message does not contain NRPS claim');
+
+        $message = $this->createMock(LtiMessageInterface::class);
+        $message
+            ->expects($this->once())
+            ->method('getNrps')
+            ->willReturn(null);
+
+
+        $this->subject->getContextMembershipFromMessage($this->createTestRegistration(), $message);
     }
 
     public function testGetContextMembershipError(): void
@@ -210,7 +290,25 @@ class MembershipServiceClientTest extends TestCase
             ->willThrowException(new Exception('custom error'));
 
 
-        $this->subject->getContextMembership($this->createTestRegistration(), $this->createTestNrpsClaim());
+        $this->subject->getContextMembership(
+            $this->createTestRegistration(),
+            $this->createTestNrpsClaim()->getContextMembershipsUrl()
+        );
+    }
+
+    public function testGetResourceLinkMembershipFromMessageError(): void
+    {
+        $this->expectException(LtiExceptionInterface::class);
+        $this->expectExceptionMessage('Cannot get resource link membership from message: Provided message does not contain NRPS claim');
+
+        $message = $this->createMock(LtiMessageInterface::class);
+        $message
+            ->expects($this->once())
+            ->method('getNrps')
+            ->willReturn(null);
+
+
+        $this->subject->getResourceLinkMembershipFromMessage($this->createTestRegistration(), $message);
     }
 
     public function testGetResourceLinkMembershipError(): void
@@ -226,8 +324,8 @@ class MembershipServiceClientTest extends TestCase
 
         $this->subject->getResourceLinkMembership(
             $this->createTestRegistration(),
-            $this->createTestNrpsClaim(),
-            $resourceLinkClaim = $this->createTestResourceLinkClaim()
+            $this->createTestNrpsClaim()->getContextMembershipsUrl(),
+            $this->createTestResourceLinkClaim()->getId()
         );
     }
 

@@ -275,7 +275,6 @@ class MembershipServiceClientTest extends TestCase
             ->method('getNrps')
             ->willReturn(null);
 
-
         $this->subject->getContextMembershipFromMessage($this->createTestRegistration(), $message);
     }
 
@@ -288,7 +287,6 @@ class MembershipServiceClientTest extends TestCase
             ->expects($this->once())
             ->method('request')
             ->willThrowException(new Exception('custom error'));
-
 
         $this->subject->getContextMembership(
             $this->createTestRegistration(),
@@ -307,7 +305,6 @@ class MembershipServiceClientTest extends TestCase
             ->method('getNrps')
             ->willReturn(null);
 
-
         $this->subject->getResourceLinkMembershipFromMessage($this->createTestRegistration(), $message);
     }
 
@@ -320,7 +317,6 @@ class MembershipServiceClientTest extends TestCase
             ->expects($this->once())
             ->method('request')
             ->willThrowException(new Exception('custom error'));
-
 
         $this->subject->getResourceLinkMembership(
             $this->createTestRegistration(),

@@ -22,9 +22,9 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Nrps\Service\Client;
 
+use InvalidArgumentException;
 use OAT\Library\Lti1p3Core\Exception\LtiException;
-use OAT\Library\Lti1p3Core\Message\Claim\NrpsClaim;
-use OAT\Library\Lti1p3Core\Message\Claim\ResourceLinkClaim;
+use OAT\Library\Lti1p3Core\Message\LtiMessageInterface;
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClient;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClientInterface;
@@ -57,16 +57,47 @@ class MembershipServiceClient implements MembershipServiceInterface
      * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership
      * @throws LtiException
      */
+    public function getContextMembershipFromMessage(
+        RegistrationInterface $registration,
+        LtiMessageInterface $message,
+        string $role = null,
+        int $limit = null
+    ): MembershipInterface {
+        try {
+            if (null === $message->getNrps()) {
+                throw new InvalidArgumentException('Provided message does not contain NRPS claim');
+            }
+
+            return $this->getMembership(
+                $registration,
+                $message->getNrps()->getContextMembershipsUrl(),
+                null,
+                $role,
+                $limit
+            );
+        } catch (Throwable $exception) {
+            throw new LtiException(
+                sprintf('Cannot get context membership from message: %s', $exception->getMessage()),
+                $exception->getCode(),
+                $exception
+            );
+        }
+    }
+
+    /**
+     * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership
+     * @throws LtiException
+     */
     public function getContextMembership(
         RegistrationInterface $registration,
-        NrpsClaim $nrpsClaim,
+        string $membershipServiceUrl,
         string $role = null,
         int $limit = null
     ): MembershipInterface {
         try {
             return $this->getMembership(
                 $registration,
-                $nrpsClaim,
+                $membershipServiceUrl,
                 null,
                 $role,
                 $limit
@@ -84,18 +115,49 @@ class MembershipServiceClient implements MembershipServiceInterface
      * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service
      * @throws LtiException
      */
+    public function getResourceLinkMembershipFromMessage(
+        RegistrationInterface $registration,
+        LtiMessageInterface $message,
+        string $role = null,
+        int $limit = null
+    ): MembershipInterface {
+        try {
+            if (null === $message->getNrps()) {
+                throw new InvalidArgumentException('Provided message does not contain NRPS claim');
+            }
+
+            return $this->getMembership(
+                $registration,
+                $message->getNrps()->getContextMembershipsUrl(),
+                $message->getResourceLink()->getId(),
+                $role,
+                $limit
+            );
+        } catch (Throwable $exception) {
+            throw new LtiException(
+                sprintf('Cannot get resource link membership from message: %s', $exception->getMessage()),
+                $exception->getCode(),
+                $exception
+            );
+        }
+    }
+
+    /**
+     * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service
+     * @throws LtiException
+     */
     public function getResourceLinkMembership(
         RegistrationInterface $registration,
-        NrpsClaim $nrpsClaim,
-        ResourceLinkClaim $resourceLinkClaim,
+        string $membershipServiceUrl,
+        string $resourceLinkIdentifier,
         string $role = null,
         int $limit = null
     ): MembershipInterface {
         try {
             return $this->getMembership(
                 $registration,
-                $nrpsClaim,
-                $resourceLinkClaim,
+                $membershipServiceUrl,
+                $resourceLinkIdentifier,
                 $role,
                 $limit
             );
@@ -110,15 +172,15 @@ class MembershipServiceClient implements MembershipServiceInterface
 
     private function getMembership(
         RegistrationInterface $registration,
-        NrpsClaim $nrpsClaim,
-        ResourceLinkClaim $resourceLinkClaim = null,
+        string $membershipServiceUrl,
+        string $resourceLinkIdentifier = null,
         string $role = null,
         int $limit = null
     ): MembershipInterface {
         $response = $this->client->request(
             $registration,
             'GET',
-            $this->buildNrpsEndpointUrl($nrpsClaim, $resourceLinkClaim, $role, $limit),
+            $this->buildNrpsEndpointUrl($membershipServiceUrl, $resourceLinkIdentifier, $role, $limit),
             [
                 'headers' => ['Accept' => static::CONTENT_TYPE_MEMBERSHIP]
             ],
@@ -138,23 +200,25 @@ class MembershipServiceClient implements MembershipServiceInterface
     }
 
     private function buildNrpsEndpointUrl(
-        NrpsClaim $nrpsClaim,
-        ResourceLinkClaim $resourceLinkClaim = null,
+        string $membershipServiceUrl,
+        string $resourceLinkIdentifier = null,
         string $role = null,
         int $limit = null
     ): string {
-        $url = $nrpsClaim->getContextMembershipsUrl();
-
         $parameters = array_filter([
-            'rlid' => $resourceLinkClaim ? $resourceLinkClaim->getId() : null,
+            'rlid' => $resourceLinkIdentifier,
             'role' => $role,
             'limit' => $limit,
         ]);
 
         if (empty($parameters)) {
-            return $url;
+            return $membershipServiceUrl;
         }
 
-        return sprintf('%s%s%s', $url, strpos($url, '?') ? '&' : '?', http_build_query($parameters));
+        return sprintf(
+            '%s%s%s',
+            $membershipServiceUrl,
+            strpos($membershipServiceUrl, '?') ? '&' : '?', http_build_query($parameters)
+        );
     }
 }

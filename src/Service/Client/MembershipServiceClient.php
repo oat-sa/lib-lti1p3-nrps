@@ -24,8 +24,8 @@ namespace OAT\Library\Lti1p3Nrps\Service\Client;
 
 use InvalidArgumentException;
 use OAT\Library\Lti1p3Core\Exception\LtiException;
-use OAT\Library\Lti1p3Core\Message\LtiMessageInterface;
-use OAT\Library\Lti1p3Core\Message\Token\LtiMessageTokenInterface;
+use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
+use OAT\Library\Lti1p3Core\Message\Payload\LtiMessagePayloadInterface;
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClient;
 use OAT\Library\Lti1p3Core\Service\Client\ServiceClientInterface;
@@ -56,22 +56,22 @@ class MembershipServiceClient implements MembershipServiceInterface
 
     /**
      * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership
-     * @throws LtiException
+     * @throws LtiExceptionInterface
      */
-    public function getContextMembershipFromMessageToken(
+    public function getContextMembershipFromMessagePayload(
         RegistrationInterface $registration,
-        LtiMessageTokenInterface $messageToken,
+        LtiMessagePayloadInterface $messagePayload,
         string $role = null,
         int $limit = null
     ): MembershipInterface {
         try {
-            if (null === $messageToken->getNrps()) {
+            if (null === $messagePayload->getNrps()) {
                 throw new InvalidArgumentException('Provided message does not contain NRPS claim');
             }
 
             return $this->getMembership(
                 $registration,
-                $messageToken->getNrps()->getContextMembershipsUrl(),
+                $messagePayload->getNrps()->getContextMembershipsUrl(),
                 null,
                 $role,
                 $limit
@@ -87,7 +87,7 @@ class MembershipServiceClient implements MembershipServiceInterface
 
     /**
      * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership
-     * @throws LtiException
+     * @throws LtiExceptionInterface
      */
     public function getContextMembership(
         RegistrationInterface $registration,
@@ -114,23 +114,23 @@ class MembershipServiceClient implements MembershipServiceInterface
 
     /**
      * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service
-     * @throws LtiException
+     * @throws LtiExceptionInterface
      */
-    public function getResourceLinkMembershipFromMessageToken(
+    public function getResourceLinkMembershipFromMessagePayload(
         RegistrationInterface $registration,
-        LtiMessageTokenInterface $messageToken,
+        LtiMessagePayloadInterface $messagePayload,
         string $role = null,
         int $limit = null
     ): MembershipInterface {
         try {
-            if (null === $messageToken->getNrps()) {
+            if (null === $messagePayload->getNrps()) {
                 throw new InvalidArgumentException('Provided message does not contain NRPS claim');
             }
 
             return $this->getMembership(
                 $registration,
-                $messageToken->getNrps()->getContextMembershipsUrl(),
-                $messageToken->getResourceLink()->getId(),
+                $messagePayload->getNrps()->getContextMembershipsUrl(),
+                $messagePayload->getResourceLink()->getId(),
                 $role,
                 $limit
             );
@@ -145,7 +145,7 @@ class MembershipServiceClient implements MembershipServiceInterface
 
     /**
      * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service
-     * @throws LtiException
+     * @throws LtiExceptionInterface
      */
     public function getResourceLinkMembership(
         RegistrationInterface $registration,

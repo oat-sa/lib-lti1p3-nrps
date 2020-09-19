@@ -23,6 +23,7 @@ First, you need to provide a [MembershipServiceServerBuilderInterface](../src/Se
 <?php
 
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
+use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use OAT\Library\Lti1p3Nrps\Service\Server\Builder\MembershipServiceServerBuilderInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -47,7 +48,7 @@ $builder = new class() implements MembershipServiceServerBuilderInterface
     ): MembershipInterface {
         // Logic for building resource link membership for a given registration, request and resource link
     }
-}
+};
 ```
 
 You can then construct the [MembershipServiceServer](../src/Service/Server/MembershipServiceServer.php) with:

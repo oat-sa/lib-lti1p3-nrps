@@ -11,9 +11,9 @@
 
 This library provides a [MembershipServiceClient](../src/Service/Client/MembershipServiceClient.php) (based on the [core service client](https://github.com/oat-sa/lib-lti1p3-core/blob/master/doc/service/service-client.md)) that allow retrieving NRPS memberships exposed by a platform.
 
-- `getContextMembershipFromMessage()`: method to retrieve [context membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership) from a received LTI message
+- `getContextMembershipFromMessagePayload()`: method to retrieve [context membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership) from a received LTI message payload
 - `getContextMembership()`: method to retrieve [context membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership) for a given membership service url
-- `getResourcLinkMembershipFromMessage()`: method to retrieve [resource link membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service) from a received LTI message
+- `getResourcLinkMembershipFromMessagePayload()`: method to retrieve [resource link membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service) from a received LTI message payload
 - `getResourcLinkMembership()`: method to retrieve [resource link membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service) for given membership service url and resource link identifier
 
 ## Usage
@@ -22,7 +22,7 @@ To get a context membership:
 ```php
 <?php
 
-use OAT\Library\Lti1p3Core\Message\LtiMessageInterface;
+use OAT\Library\Lti1p3Core\Message\Payload\LtiMessagePayloadInterface;
 use OAT\Library\Lti1p3Core\Registration\RegistrationRepositoryInterface;
 use OAT\Library\Lti1p3Nrps\Service\Client\MembershipServiceClient;
 
@@ -30,15 +30,15 @@ use OAT\Library\Lti1p3Nrps\Service\Client\MembershipServiceClient;
 /** @var RegistrationRepositoryInterface $registrationRepository */
 $registration = $registrationRepository->find(...);
 
-// Related LTI 1.3 message
-/** @var LtiMessageInterface $ltiMessage */
-$ltiMessage  = ...;
+// Related LTI 1.3 message payload
+/** @var LtiMessagePayloadInterface $payload */
+$payload  = ...;
 
 $membershipServiceClient = new MembershipServiceClient();
 
-$membership = $membershipServiceClient->getContextMembershipFromMessage(
+$membership = $membershipServiceClient->getContextMembershipFromMessagePayload(
     $registration, // [required] as the tool, it will call the platform of this registration
-    $ltiMessage,   // [required] from the LTI message containing the NRPS claim (got at LTI launch)
+    $payload,      // [required] from the LTI message payload containing the NRPS claim (got at LTI launch)
     'Learner',     // [optional] we can filter members for a role (default: no filter)
     10             // [optional] and limit the number of presented members (default: no limit)
 );
@@ -76,7 +76,7 @@ To get a resource link membership:
 ```php
 <?php
 
-use OAT\Library\Lti1p3Core\Message\LtiMessageInterface;
+use OAT\Library\Lti1p3Core\Message\Payload\LtiMessagePayloadInterface;
 use OAT\Library\Lti1p3Core\Registration\RegistrationRepositoryInterface;
 use OAT\Library\Lti1p3Nrps\Service\Client\MembershipServiceClient;
 
@@ -84,15 +84,15 @@ use OAT\Library\Lti1p3Nrps\Service\Client\MembershipServiceClient;
 /** @var RegistrationRepositoryInterface $registrationRepository */
 $registration = $registrationRepository->find(...);
 
-// Related LTI 1.3 message
-/** @var LtiMessageInterface $ltiMessage */
-$ltiMessage  = ...;
+// Related LTI 1.3 message payload
+/** @var LtiMessagePayloadInterface $payload */
+$payload  = ...;
 
 $membershipServiceClient = new MembershipServiceClient();
 
-$membership = $membershipServiceClient->getResourceLinkMembershipFromMessage(
+$membership = $membershipServiceClient->getResourceLinkMembershipFromMessagePayload(
     $registration, // [required] as the tool, it will call the platform of this registration
-    $ltiMessage,   // [required] from the LTI message containing the NRPS and ResourceLink claims (got at LTI launch)
+    $payload,      // [required] from the LTI message payload containing the NRPS and ResourceLink claims (got at LTI launch)
     'Learner',     // [optional] we can filter members for a role (default: no filter)
     10             // [optional] and limit the number of presented members (default: no limit)
 );

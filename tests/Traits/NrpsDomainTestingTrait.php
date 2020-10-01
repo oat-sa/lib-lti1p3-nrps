@@ -22,9 +22,9 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Nrps\Tests\Traits;
 
-use OAT\Library\Lti1p3Core\Link\ResourceLink\ResourceLinkInterface;
-use OAT\Library\Lti1p3Core\Message\Claim\NrpsClaim;
 use OAT\Library\Lti1p3Core\Message\LtiMessageInterface;
+use OAT\Library\Lti1p3Core\Message\Payload\Claim\NrpsClaim;
+use OAT\Library\Lti1p3Core\Message\Payload\LtiMessagePayloadInterface;
 use OAT\Library\Lti1p3Core\Tests\Traits\DomainTestingTrait;
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
 use OAT\Library\Lti1p3Nrps\Model\Context\Context;
@@ -53,8 +53,8 @@ trait NrpsDomainTestingTrait
     private function createTestMessage(array $data = null): MessageInterface
     {
         return new Message($data ?? [
-            LtiMessageInterface::CLAIM_LTI_MESSAGE_TYPE => ResourceLinkInterface::TYPE,
-            LtiMessageInterface::CLAIM_LTI_BASIC_OUTCOME => [
+            LtiMessagePayloadInterface::CLAIM_LTI_MESSAGE_TYPE => LtiMessageInterface::LTI_MESSAGE_TYPE_RESOURCE_LINK_REQUEST,
+            LtiMessagePayloadInterface::CLAIM_LTI_BASIC_OUTCOME => [
                 'lis_result_sourcedid' => 'sourcedId',
                 'lis_outcome_service_url' => 'http://example.com/outcome'
             ]

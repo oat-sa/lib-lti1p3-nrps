@@ -1,6 +1,12 @@
 # LTI 1.3 NRPS Library
 
-> PHP library for [LTI 1.3 Names and Role Provisioning Services](https://www.imsglobal.org/spec/lti-nrps/v2p0) implementations as platforms and / or as tools, based on [lti1p3-core library](https://github.com/oat-sa/lib-lti1p3-core).
+[![Latest Version](https://img.shields.io/github/tag/oat-sa/lib-lti1p3-nrps.svg?style=flat&label=release)](https://github.com/oat-sa/lib-lti1p3-nrps/tags)
+[![License GPL2](http://img.shields.io/badge/licence-GPL%202.0-blue.svg)](http://www.gnu.org/licenses/gpl-2.0.html)
+[![Build Status](https://travis-ci.org/oat-sa/lib-lti1p3-nrps.svg?branch=master)](https://travis-ci.org/oat-sa/lib-lti1p3-nrps)
+[![Coverage Status](https://coveralls.io/repos/github/oat-sa/lib-lti1p3-nrps/badge.svg?branch=master)](https://coveralls.io/github/oat-sa/lib-lti1p3-nrps?branch=master)
+[![Packagist Downloads](http://img.shields.io/packagist/dt/oat-sa/lib-lti1p3-nrps.svg)](https://packagist.org/packages/oat-sa/lib-lti1p3-nrps)
+
+> PHP library for [LTI 1.3 Names and Role Provisioning Services](https://www.imsglobal.org/spec/lti-nrps/v2p0) implementations as platforms and / or as tools, based on [LTI 1.3 Core library](https://github.com/oat-sa/lib-lti1p3-core).
 
 # Table of contents
 
@@ -23,9 +29,12 @@ $ composer require oat-sa/lib-lti1p3-nrps
 
 ## Tutorials
 
-Before using this library, you must first  [configure the lti1p3-core library](https://github.com/oat-sa/lib-lti1p3-core#quick-start).
-
 You can then find below usage tutorials, presented by topics.
+
+### Configuration
+
+- how to [configure the underlying LTI 1.3 Core library](https://github.com/oat-sa/lib-lti1p3-core#quick-start).
+
 
 ### Tool
 

@@ -58,27 +58,27 @@ class MembershipServiceClient implements MembershipServiceInterface
      * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership
      * @throws LtiExceptionInterface
      */
-    public function getContextMembershipFromMessagePayload(
+    public function getContextMembershipFromPayload(
         RegistrationInterface $registration,
-        LtiMessagePayloadInterface $messagePayload,
+        LtiMessagePayloadInterface $payload,
         string $role = null,
         int $limit = null
     ): MembershipInterface {
         try {
-            if (null === $messagePayload->getNrps()) {
-                throw new InvalidArgumentException('Provided message does not contain NRPS claim');
+            if (null === $payload->getNrps()) {
+                throw new InvalidArgumentException('Provided payload does not contain NRPS claim');
             }
 
             return $this->getMembership(
                 $registration,
-                $messagePayload->getNrps()->getContextMembershipsUrl(),
+                $payload->getNrps()->getContextMembershipsUrl(),
                 null,
                 $role,
                 $limit
             );
         } catch (Throwable $exception) {
             throw new LtiException(
-                sprintf('Cannot get context membership from message: %s', $exception->getMessage()),
+                sprintf('Cannot get context membership from payload: %s', $exception->getMessage()),
                 $exception->getCode(),
                 $exception
             );
@@ -116,27 +116,31 @@ class MembershipServiceClient implements MembershipServiceInterface
      * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service
      * @throws LtiExceptionInterface
      */
-    public function getResourceLinkMembershipFromMessagePayload(
+    public function getResourceLinkMembershipFromPayload(
         RegistrationInterface $registration,
-        LtiMessagePayloadInterface $messagePayload,
+        LtiMessagePayloadInterface $payload,
         string $role = null,
         int $limit = null
     ): MembershipInterface {
         try {
-            if (null === $messagePayload->getNrps()) {
-                throw new InvalidArgumentException('Provided message does not contain NRPS claim');
+            if (null === $payload->getResourceLink()) {
+                throw new InvalidArgumentException('Provided payload does not contain ResourceLink claim');
+            }
+
+            if (null === $payload->getNrps()) {
+                throw new InvalidArgumentException('Provided payload does not contain NRPS claim');
             }
 
             return $this->getMembership(
                 $registration,
-                $messagePayload->getNrps()->getContextMembershipsUrl(),
-                $messagePayload->getResourceLink()->getId(),
+                $payload->getNrps()->getContextMembershipsUrl(),
+                $payload->getResourceLink()->getIdentifier(),
                 $role,
                 $limit
             );
         } catch (Throwable $exception) {
             throw new LtiException(
-                sprintf('Cannot get resource link membership from message: %s', $exception->getMessage()),
+                sprintf('Cannot get resource link membership from payload: %s', $exception->getMessage()),
                 $exception->getCode(),
                 $exception
             );

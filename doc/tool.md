@@ -11,10 +11,11 @@
 
 This library provides a [MembershipServiceClient](../src/Service/Client/MembershipServiceClient.php) (based on the [core service client](https://github.com/oat-sa/lib-lti1p3-core/blob/master/doc/service/service-client.md)) that allow retrieving NRPS memberships exposed by a platform.
 
-- `getContextMembershipFromMessagePayload()`: method to retrieve [context membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership) from a received LTI message payload
-- `getContextMembership()`: method to retrieve [context membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership) for a given membership service url
-- `getResourcLinkMembershipFromMessagePayload()`: method to retrieve [resource link membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service) from a received LTI message payload
-- `getResourcLinkMembership()`: method to retrieve [resource link membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service) for given membership service url and resource link identifier
+You can use:
+- `getContextMembershipFromPayload()` to get [context membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership) from a received LTI message payload
+- `getContextMembership()` to get [context membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership) for a given membership service url
+- `getResourceLinkMembershipFromPayload()` to get [resource link membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service) from a received LTI message payload
+- `getResourceLinkMembership()` to get [resource link membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service) for given membership service url and resource link identifier
 
 ## Usage
 
@@ -36,7 +37,7 @@ $payload  = ...;
 
 $membershipServiceClient = new MembershipServiceClient();
 
-$membership = $membershipServiceClient->getContextMembershipFromMessagePayload(
+$membership = $membershipServiceClient->getContextMembershipFromPayload(
     $registration, // [required] as the tool, it will call the platform of this registration
     $payload,      // [required] from the LTI message payload containing the NRPS claim (got at LTI launch)
     'Learner',     // [optional] we can filter members for a role (default: no filter)
@@ -90,7 +91,7 @@ $payload  = ...;
 
 $membershipServiceClient = new MembershipServiceClient();
 
-$membership = $membershipServiceClient->getResourceLinkMembershipFromMessagePayload(
+$membership = $membershipServiceClient->getResourceLinkMembershipFromPayload(
     $registration, // [required] as the tool, it will call the platform of this registration
     $payload,      // [required] from the LTI message payload containing the NRPS and ResourceLink claims (got at LTI launch)
     'Learner',     // [optional] we can filter members for a role (default: no filter)

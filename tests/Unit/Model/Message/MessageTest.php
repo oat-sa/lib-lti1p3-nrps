@@ -22,9 +22,9 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Nrps\Tests\Unit\Model\Message;
 
-use OAT\Library\Lti1p3Core\Link\ResourceLink\ResourceLinkInterface;
-use OAT\Library\Lti1p3Core\Message\Claim\BasicOutcomeClaim;
 use OAT\Library\Lti1p3Core\Message\LtiMessageInterface;
+use OAT\Library\Lti1p3Core\Message\Payload\Claim\BasicOutcomeClaim;
+use OAT\Library\Lti1p3Core\Message\Payload\LtiMessagePayloadInterface;
 use OAT\Library\Lti1p3Nrps\Model\Message\MessageInterface;
 use OAT\Library\Lti1p3Nrps\Tests\Traits\NrpsDomainTestingTrait;
 use PHPUnit\Framework\TestCase;
@@ -45,8 +45,8 @@ class MessageTest extends TestCase
     {
         $this->assertEquals(
             [
-                LtiMessageInterface::CLAIM_LTI_MESSAGE_TYPE => ResourceLinkInterface::TYPE,
-                LtiMessageInterface::CLAIM_LTI_BASIC_OUTCOME => [
+                LtiMessagePayloadInterface::CLAIM_LTI_MESSAGE_TYPE => LtiMessageInterface::LTI_MESSAGE_TYPE_RESOURCE_LINK_REQUEST,
+                LtiMessagePayloadInterface::CLAIM_LTI_BASIC_OUTCOME => [
                     'lis_result_sourcedid' => 'sourcedId',
                     'lis_outcome_service_url' => 'http://example.com/outcome'
                 ]
@@ -57,16 +57,16 @@ class MessageTest extends TestCase
 
     public function testHasClaim(): void
     {
-        $this->assertTrue($this->subject->hasClaim(LtiMessageInterface::CLAIM_LTI_MESSAGE_TYPE));
-        $this->assertTrue($this->subject->hasClaim(LtiMessageInterface::CLAIM_LTI_BASIC_OUTCOME));
+        $this->assertTrue($this->subject->hasClaim(LtiMessagePayloadInterface::CLAIM_LTI_MESSAGE_TYPE));
+        $this->assertTrue($this->subject->hasClaim(LtiMessagePayloadInterface::CLAIM_LTI_BASIC_OUTCOME));
         $this->assertFalse($this->subject->hasClaim('invalid'));
     }
 
     public function testGetClaim(): void
     {
         $this->assertEquals(
-            ResourceLinkInterface::TYPE,
-            $this->subject->getClaim(LtiMessageInterface::CLAIM_LTI_MESSAGE_TYPE)
+            LtiMessageInterface::LTI_MESSAGE_TYPE_RESOURCE_LINK_REQUEST,
+            $this->subject->getClaim(LtiMessagePayloadInterface::CLAIM_LTI_MESSAGE_TYPE)
         );
 
         $basicOutcomeClaim = $this->subject->getClaim(BasicOutcomeClaim::class);
@@ -81,8 +81,8 @@ class MessageTest extends TestCase
     {
         $this->assertEquals(
             [
-                LtiMessageInterface::CLAIM_LTI_MESSAGE_TYPE => ResourceLinkInterface::TYPE,
-                LtiMessageInterface::CLAIM_LTI_BASIC_OUTCOME => [
+                LtiMessagePayloadInterface::CLAIM_LTI_MESSAGE_TYPE => LtiMessageInterface::LTI_MESSAGE_TYPE_RESOURCE_LINK_REQUEST,
+                LtiMessagePayloadInterface::CLAIM_LTI_BASIC_OUTCOME => [
                     'lis_result_sourcedid' => 'sourcedId',
                     'lis_outcome_service_url' => 'http://example.com/outcome'
                 ]

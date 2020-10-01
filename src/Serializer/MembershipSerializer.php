@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace OAT\Library\Lti1p3Nrps\Serializer;
 
 use OAT\Library\Lti1p3Core\Exception\LtiException;
+use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
 use OAT\Library\Lti1p3Nrps\Factory\Membership\MembershipFactory;
 use OAT\Library\Lti1p3Nrps\Factory\Membership\MembershipFactoryInterface;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
@@ -42,6 +43,9 @@ class MembershipSerializer implements MembershipSerializerInterface
         return json_encode($membership);
     }
 
+    /**
+     * @throws LtiExceptionInterface
+     */
     public function deserialize(string $data): MembershipInterface
     {
         $decodedData = json_decode($data, true);

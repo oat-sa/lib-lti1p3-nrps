@@ -24,6 +24,7 @@ namespace OAT\Library\Lti1p3Nrps\Model\Member;
 
 use ArrayIterator;
 use OAT\Library\Lti1p3Core\Exception\LtiException;
+use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
 
 class MemberCollection implements MemberCollectionInterface
 {
@@ -45,7 +46,7 @@ class MemberCollection implements MemberCollectionInterface
     }
 
     /**
-     * @throws LtiException
+     * @throws LtiExceptionInterface
      */
     public function get(string $identifier): MemberInterface
     {

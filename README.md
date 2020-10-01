@@ -35,7 +35,6 @@ You can then find below usage tutorials, presented by topics.
 
 - how to [configure the underlying LTI 1.3 Core library](https://github.com/oat-sa/lib-lti1p3-core#quick-start).
 
-
 ### Tool
 
 - how to [use the NRPS library as a tool](doc/tool.md)

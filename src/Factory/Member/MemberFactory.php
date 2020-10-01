@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace OAT\Library\Lti1p3Nrps\Factory\Member;
 
 use OAT\Library\Lti1p3Core\Exception\LtiException;
+use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
 use OAT\Library\Lti1p3Core\User\UserIdentityFactory;
 use OAT\Library\Lti1p3Core\User\UserIdentityFactoryInterface;
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
@@ -49,7 +50,7 @@ class MemberFactory implements MemberFactoryInterface
     }
 
     /**
-     * @throws LtiException
+     * @throws LtiExceptionInterface
      */
     public function create(array $data): MemberInterface
     {

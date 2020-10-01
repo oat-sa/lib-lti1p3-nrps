@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace OAT\Library\Lti1p3Nrps\Factory\Membership;
 
 use OAT\Library\Lti1p3Core\Exception\LtiException;
+use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
 use OAT\Library\Lti1p3Nrps\Factory\Context\ContextFactory;
 use OAT\Library\Lti1p3Nrps\Factory\Context\ContextFactoryInterface;
 use OAT\Library\Lti1p3Nrps\Factory\Member\MemberFactory;
@@ -49,7 +50,7 @@ class MembershipFactory implements MembershipFactoryInterface
     }
 
     /**
-     * @throws LtiException
+     * @throws LtiExceptionInterface
      */
     public function create(array $data, string $relationLink = null): MembershipInterface
     {

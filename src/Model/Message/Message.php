@@ -22,7 +22,7 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Nrps\Model\Message;
 
-use OAT\Library\Lti1p3Core\Message\Claim\MessageClaimInterface;
+use OAT\Library\Lti1p3Core\Message\Payload\Claim\MessagePayloadClaimInterface;
 
 class Message implements MessageInterface
 {
@@ -41,8 +41,8 @@ class Message implements MessageInterface
 
     public function getClaim(string $claim)
     {
-        if (is_a($claim, MessageClaimInterface::class, true)) {
-            /**  @var MessageClaimInterface $claim */
+        if (is_a($claim, MessagePayloadClaimInterface::class, true)) {
+            /**  @var MessagePayloadClaimInterface $claim */
             return $claim::denormalize($this->data[$claim::getClaimName()]);
         }
 

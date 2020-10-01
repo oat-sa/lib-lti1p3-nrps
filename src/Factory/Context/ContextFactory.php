@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace OAT\Library\Lti1p3Nrps\Factory\Context;
 
 use OAT\Library\Lti1p3Core\Exception\LtiException;
+use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
 use OAT\Library\Lti1p3Nrps\Model\Context\Context;
 use OAT\Library\Lti1p3Nrps\Model\Context\ContextInterface;
 use Throwable;
@@ -30,7 +31,7 @@ use Throwable;
 class ContextFactory implements ContextFactoryInterface
 {
     /**
-     * @throws LtiException
+     * @throws LtiExceptionInterface
      */
     public function create(array $data): ContextInterface
     {

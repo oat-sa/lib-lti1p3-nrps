@@ -79,7 +79,7 @@ class MembershipServiceServerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildContextMembership')
-            ->with($registration, $request)
+            ->with($registration)
             ->willReturn($membership);
 
         $response = $this->subject->handle($request);
@@ -118,7 +118,7 @@ class MembershipServiceServerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildContextMembership')
-            ->with($registration, $request, $role,$limit)
+            ->with($registration, $role, $limit)
             ->willReturn($membership);
 
         $response = $this->subject->handle($request);
@@ -156,7 +156,7 @@ class MembershipServiceServerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildResourceLinkMembership')
-            ->with($registration, $request, $resourceIdentifier)
+            ->with($registration, $resourceIdentifier)
             ->willReturn($membership);
 
         $response = $this->subject->handle($request);
@@ -196,7 +196,7 @@ class MembershipServiceServerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildResourceLinkMembership')
-            ->with($registration, $request, $resourceIdentifier, $role, $limit)
+            ->with($registration, $resourceIdentifier, $role, $limit)
             ->willReturn($membership);
 
         $response = $this->subject->handle($request);
@@ -251,7 +251,7 @@ class MembershipServiceServerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildContextMembership')
-            ->with($registration, $request)
+            ->with($registration)
             ->willThrowException(new Exception('builder error'));
 
         $response = $this->subject->handle($request);

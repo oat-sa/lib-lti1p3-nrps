@@ -53,7 +53,7 @@ class MembershipFactoryTest extends TestCase
             ]
         ];
 
-        $result = $this->subject->create($data, 'http://example.com/membership;rel=next');
+        $result = $this->subject->create($data, 'http://example.com/membership;rel="next"');
 
         $this->assertInstanceOf(MembershipInterface::class, $result);
 

@@ -106,7 +106,7 @@ trait NrpsDomainTestingTrait
         string $identifier = 'identifier',
         ContextInterface $context = null,
         MemberCollectionInterface $memberCollection = null,
-        ?string $relationLink = 'http://example.com/membership;rel=next'
+        ?string $relationLink = 'http://example.com/membership;rel="next"'
     ): MembershipInterface {
         return new Membership(
             $identifier,

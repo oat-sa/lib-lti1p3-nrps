@@ -113,7 +113,7 @@ class MembershipServiceClientTest extends TestCase
             json_encode($membership),
             200,
             [
-                'Link' => 'http://example.com/membership;rel=next'
+                'Link' => 'http://example.com/membership;rel="next"'
             ]
         );
 
@@ -123,7 +123,7 @@ class MembershipServiceClientTest extends TestCase
         $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
         $this->assertEquals($membership->getContext(), $result->getContext());
         $this->assertEquals($membership->getMembers(), $result->getMembers());
-        $this->assertEquals('http://example.com/membership;rel=next', $membership->getRelationLink());
+        $this->assertEquals('http://example.com/membership;rel="next"', $membership->getRelationLink());
         $this->assertTrue($membership->hasNext());
         $this->assertFalse($membership->hasDifferences());
     }

@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace OAT\Library\Lti1p3Nrps\Tests\Unit\Model\Membership;
 
 use OAT\Library\Lti1p3Nrps\Model\Member\MemberInterface;
+use OAT\Library\Lti1p3Nrps\Model\Membership\Membership;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use OAT\Library\Lti1p3Nrps\Tests\Traits\NrpsDomainTestingTrait;
 use PHPUnit\Framework\TestCase;
@@ -66,16 +67,36 @@ class MembershipTest extends TestCase
 
     public function testGetRelationLink(): void
     {
-        $this->assertEquals('http://example.com/membership;rel=next', $this->subject->getRelationLink());
+        $this->assertEquals('http://example.com/membership;rel="next"', $this->subject->getRelationLink());
     }
 
     public function testSetRelationLink(): void
     {
-        $this->assertEquals('http://example.com/membership;rel=next', $this->subject->getRelationLink());
+        $this->assertEquals('http://example.com/membership;rel="next"', $this->subject->getRelationLink());
 
-        $this->subject->setRelationLink('http://other.com/membership;rel=next');
+        $this->subject->setRelationLink('http://other.com/membership;rel="next"');
 
-        $this->assertEquals('http://other.com/membership;rel=next', $this->subject->getRelationLink());
+        $this->assertEquals('http://other.com/membership;rel="next"', $this->subject->getRelationLink());
+    }
+
+    public function testGetRelationLinkUrl(): void
+    {
+        $this->assertEquals('http://example.com/membership', $this->subject->getRelationLinkUrl());
+
+        $this->subject->setRelationLink('<http://example.com/membership>; rel="differences"');
+        $this->assertEquals('http://example.com/membership', $this->subject->getRelationLinkUrl());
+
+        $this->subject->setRelationLink(' <http://example.com/membership>; rel="differences"');
+        $this->assertEquals('http://example.com/membership', $this->subject->getRelationLinkUrl());
+
+        $this->subject->setRelationLink('<http://example.com/membership> ; rel="differences"');
+        $this->assertEquals('http://example.com/membership', $this->subject->getRelationLinkUrl());
+
+        $this->subject->setRelationLink('<http://example.com/membership>');
+        $this->assertEquals('http://example.com/membership', $this->subject->getRelationLinkUrl());
+
+        $this->subject->setRelationLink(null);
+        $this->assertNull($this->subject->getRelationLinkUrl());
     }
 
     public function testRelation(): void
@@ -83,7 +104,7 @@ class MembershipTest extends TestCase
         $this->assertTrue($this->subject->hasNext());
         $this->assertFalse($this->subject->hasDifferences());
 
-        $this->subject->setRelationLink('http://example.com/membership;rel=differences');
+        $this->subject->setRelationLink('http://example.com/membership;rel="differences"');
 
         $this->assertFalse($this->subject->hasNext());
         $this->assertTrue($this->subject->hasDifferences());

@@ -41,7 +41,9 @@ interface MembershipInterface extends JsonSerializable
 
     public function getRelationLink(): ?string;
 
-    public function setRelationLink(string $relationLink): MembershipInterface;
+    public function setRelationLink(?string $relationLink): MembershipInterface;
+
+    public function getRelationLinkUrl(): ?string;
 
     public function hasNext(): bool;
 

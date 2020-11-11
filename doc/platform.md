@@ -43,7 +43,7 @@ $builder = new class() implements MembershipServiceServerBuilderInterface
         string $role = null,
         string $limit = null
     ): MembershipInterface {
-        // Logic for building resource link membership for a given registration and resource link
+        // Logic for building resource link membership for a given registration and resource link identifier
     }
 };
 ```

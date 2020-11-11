@@ -93,6 +93,12 @@ class Member implements MemberInterface
 
     public function jsonSerialize(): array
     {
-        return array_filter($this->properties + ['message' => [$this->message]]);
+        $properties = $this->properties;
+
+        if (null !== $this->message) {
+            $properties = $properties + ['message' => [$this->message]];
+        }
+
+        return array_filter($properties);
     }
 }

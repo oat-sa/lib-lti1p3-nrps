@@ -89,7 +89,6 @@ class MembershipServiceServer implements MembershipServiceInterface
             if (null !== $rlId) {
                 $membership = $this->builder->buildResourceLinkMembership(
                     $validationResult->getRegistration(),
-                    $request,
                     $rlId,
                     $role,
                     $limit
@@ -97,7 +96,6 @@ class MembershipServiceServer implements MembershipServiceInterface
             } else {
                 $membership = $this->builder->buildContextMembership(
                     $validationResult->getRegistration(),
-                    $request,
                     $role,
                     $limit
                 );

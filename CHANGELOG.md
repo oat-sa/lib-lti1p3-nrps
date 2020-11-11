@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+3.0.0
+-----
+
+* Removed request dependency from the membership server builder interface signatures
+* Enhanced membership relation link handling
+* Fixed member message serialization
+* Updated documentation
+
 2.0.0
 -----
 

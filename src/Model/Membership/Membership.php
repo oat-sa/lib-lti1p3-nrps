@@ -71,11 +71,22 @@ class Membership implements MembershipInterface
         return $this->relationLink;
     }
 
-    public function setRelationLink(string $relationLink): MembershipInterface
+    public function setRelationLink(?string $relationLink): MembershipInterface
     {
         $this->relationLink = $relationLink;
 
         return $this;
+    }
+
+    public function getRelationLinkUrl(): ?string
+    {
+        if (null ===$this->relationLink) {
+            return null;
+        }
+
+        $explode = explode(';', $this->relationLink);
+
+        return str_replace(['<', '>', ' '], '', current($explode));
     }
 
     public function hasNext(): bool
@@ -84,7 +95,7 @@ class Membership implements MembershipInterface
             return false;
         }
 
-        return (bool) strpos($this->relationLink, sprintf('rel=%s', static::REL_NEXT));
+        return (bool) strpos($this->relationLink, sprintf('rel="%s"', static::REL_NEXT));
     }
 
     public function hasDifferences(): bool
@@ -93,7 +104,7 @@ class Membership implements MembershipInterface
             return false;
         }
 
-        return (bool) strpos($this->relationLink, sprintf('rel=%s', static::REL_DIFFERENCES));
+        return (bool) strpos($this->relationLink, sprintf('rel="%s"', static::REL_DIFFERENCES));
     }
 
     public function jsonSerialize(): array

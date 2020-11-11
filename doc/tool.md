@@ -64,6 +64,8 @@ foreach ($membership->getMembers() as $member) {
 }
 
 // Membership analysed relation link (to know presence of next or differences)
+echo $membership->getRelationLinkUrl();
+
 if ($membership->hasNext()) {
     // handle retrieval of the next members
 }

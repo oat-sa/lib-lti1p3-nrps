@@ -25,28 +25,25 @@ First, you need to provide a [MembershipServiceServerBuilderInterface](../src/Se
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use OAT\Library\Lti1p3Nrps\Service\Server\Builder\MembershipServiceServerBuilderInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 /** @var MembershipServiceServerBuilderInterface $builder */
 $builder = new class() implements MembershipServiceServerBuilderInterface 
 {
     public function buildContextMembership(
         RegistrationInterface $registration,
-        ServerRequestInterface $request,
         string $role = null,
         string $limit = null
     ): MembershipInterface {
-        // Logic for building context membership for a given registration and request
+        // Logic for building context membership for a given registration
     }
 
     public function buildResourceLinkMembership(
         RegistrationInterface $registration,
-        ServerRequestInterface $request,
         string $resourceLinkIdentifier,
         string $role = null,
         string $limit = null
     ): MembershipInterface {
-        // Logic for building resource link membership for a given registration, request and resource link
+        // Logic for building resource link membership for a given registration and resource link identifier
     }
 };
 ```

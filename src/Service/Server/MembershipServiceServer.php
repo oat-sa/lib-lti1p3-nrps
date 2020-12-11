@@ -31,6 +31,7 @@ use OAT\Library\Lti1p3Nrps\Service\MembershipServiceInterface;
 use OAT\Library\Lti1p3Nrps\Service\Server\Builder\MembershipServiceServerBuilderInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Throwable;
@@ -38,7 +39,7 @@ use Throwable;
 /**
  * @see https://www.imsglobal.org/spec/lti-nrps/v2p0
  */
-class MembershipServiceServer implements MembershipServiceInterface
+class MembershipServiceServer implements MembershipServiceInterface, RequestHandlerInterface
 {
     /** @var AccessTokenRequestValidator */
     private $validator;
@@ -71,6 +72,14 @@ class MembershipServiceServer implements MembershipServiceInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        if (false === strpos($request->getHeaderLine('Accept'), static::CONTENT_TYPE_MEMBERSHIP)) {
+            $message = sprintf('Not acceptable, accepts: %s', static::CONTENT_TYPE_MEMBERSHIP);
+
+            $this->logger->error($message);
+
+            return $this->factory->createResponse(406, null, [], $message);
+        }
+
         $validationResult = $this->validator->validate($request);
 
         if ($validationResult->hasError()) {
@@ -84,7 +93,7 @@ class MembershipServiceServer implements MembershipServiceInterface
 
             $rlId = $parameters['rlid'] ?? null;
             $role = $parameters['role'] ?? null;
-            $limit = $parameters['limit'] ?? null;
+            $limit = array_key_exists('limit', $parameters) ? intval($parameters['limit']) : null;
 
             if (null !== $rlId) {
                 $membership = $this->builder->buildResourceLinkMembership(
@@ -112,6 +121,7 @@ class MembershipServiceServer implements MembershipServiceInterface
             }
 
             return $this->factory->createResponse(200, null, $responseHeaders, $responseBody);
+
         } catch (Throwable $exception) {
             $this->logger->error($exception->getMessage());
 

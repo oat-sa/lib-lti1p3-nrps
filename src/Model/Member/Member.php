@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace OAT\Library\Lti1p3Nrps\Model\Member;
 
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
+use OAT\Library\Lti1p3Nrps\Model\Group\GroupCollectionInterface;
 use OAT\Library\Lti1p3Nrps\Model\Message\MessageInterface;
 
 class Member implements MemberInterface
@@ -42,18 +43,23 @@ class Member implements MemberInterface
     /** @var MessageInterface|null */
     private $message;
 
+    /** @var GroupCollectionInterface|null */
+    private $groups;
+
     public function __construct(
         UserIdentityInterface $userIdentity,
         string $status,
         array $roles,
         array $properties = [],
-        MessageInterface $message = null
+        MessageInterface $message = null,
+        GroupCollectionInterface $groups = null
     ) {
         $this->userIdentity = $userIdentity;
         $this->status = $status;
         $this->roles = $roles;
         $this->properties = $properties;
         $this->message = $message;
+        $this->groups = $groups;
     }
 
     public function getUserIdentity(): UserIdentityInterface
@@ -91,12 +97,21 @@ class Member implements MemberInterface
         return $this->message;
     }
 
+    public function getGroups(): ?GroupCollectionInterface
+    {
+        return $this->groups;
+    }
+
     public function jsonSerialize(): array
     {
         $properties = $this->properties;
 
         if (null !== $this->message) {
             $properties = $properties + ['message' => [$this->message]];
+        }
+
+        if (null !== $this->groups) {
+            $properties = $properties + ['group_enrollments' => $this->groups];
         }
 
         return array_filter($properties);

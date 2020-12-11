@@ -32,7 +32,7 @@ $builder = new class() implements MembershipServiceServerBuilderInterface
     public function buildContextMembership(
         RegistrationInterface $registration,
         string $role = null,
-        string $limit = null
+        int $limit = null
     ): MembershipInterface {
         // Logic for building context membership for a given registration
     }
@@ -41,7 +41,7 @@ $builder = new class() implements MembershipServiceServerBuilderInterface
         RegistrationInterface $registration,
         string $resourceLinkIdentifier,
         string $role = null,
-        string $limit = null
+        int $limit = null
     ): MembershipInterface {
         // Logic for building resource link membership for a given registration and resource link identifier
     }
@@ -58,11 +58,15 @@ To finally expose it to requests:
 
 use OAT\Library\Lti1p3Core\Registration\RegistrationRepositoryInterface;
 use OAT\Library\Lti1p3Core\Service\Server\Validator\AccessTokenRequestValidator;
+use OAT\Library\Lti1p3Nrps\Service\Server\Builder\MembershipServiceServerBuilderInterface;
 use OAT\Library\Lti1p3Nrps\Service\Server\MembershipServiceServer;
 use Psr\Http\Message\ServerRequestInterface;
 
 /** @var RegistrationRepositoryInterface $repository */
 $repository = ...
+
+/** @var MembershipServiceServerBuilderInterface $builder */
+$builder = ...
 
 $validator = new AccessTokenRequestValidator($repository);
 

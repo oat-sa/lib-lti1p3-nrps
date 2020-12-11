@@ -20,23 +20,11 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Service\Server\Builder;
+namespace OAT\Library\Lti1p3Nrps\Model\Group;
 
-use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
-use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
+use JsonSerializable;
 
-interface MembershipServiceServerBuilderInterface
+interface GroupInterface extends JsonSerializable
 {
-    public function buildContextMembership(
-        RegistrationInterface $registration,
-        string $role = null,
-        int $limit = null
-    ): MembershipInterface;
-
-    public function buildResourceLinkMembership(
-        RegistrationInterface $registration,
-        string $resourceLinkIdentifier,
-        string $role = null,
-        int $limit = null
-    ): MembershipInterface;
+    public function getIdentifier(): string;
 }

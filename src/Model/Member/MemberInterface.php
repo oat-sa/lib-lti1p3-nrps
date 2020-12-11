@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace OAT\Library\Lti1p3Nrps\Model\Member;
 
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
+use OAT\Library\Lti1p3Nrps\Model\Group\GroupCollectionInterface;
 use OAT\Library\Lti1p3Nrps\Model\Message\MessageInterface;
 use JsonSerializable;
 
@@ -45,4 +46,6 @@ interface MemberInterface extends JsonSerializable
     public function hasProperty(string $propertyName): bool;
 
     public function getMessage(): ?MessageInterface;
+
+    public function getGroups(): ?GroupCollectionInterface;
 }

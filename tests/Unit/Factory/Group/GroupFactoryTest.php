@@ -20,33 +20,37 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Tests\Unit\Factory\Message;
+namespace OAT\Library\Lti1p3Nrps\Tests\Unit\Factory\Group;
 
-use OAT\Library\Lti1p3Nrps\Factory\Message\MessageFactory;
-use OAT\Library\Lti1p3Nrps\Factory\Message\MessageFactoryInterface;
-use OAT\Library\Lti1p3Nrps\Model\Message\MessageInterface;
-use OAT\Library\Lti1p3Nrps\Tests\Traits\NrpsDomainTestingTrait;
+use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
+use OAT\Library\Lti1p3Nrps\Factory\Group\GroupFactoryInterface;
+use OAT\Library\Lti1p3Nrps\Factory\Message\GroupFactory;
+use OAT\Library\Lti1p3Nrps\Model\Group\GroupInterface;
 use PHPUnit\Framework\TestCase;
 
-class MessageFactoryTest extends TestCase
+class GroupFactoryTest extends TestCase
 {
-    use NrpsDomainTestingTrait;
-
-    /** @var MessageFactoryInterface */
+    /** @var GroupFactoryInterface */
     private $subject;
 
     protected function setUp(): void
     {
-        $this->subject = new MessageFactory();
+        $this->subject = new GroupFactory();
     }
 
-    public function testCreate(): void
+    public function testCreateSuccess(): void
     {
-        $message = $this->createTestMessage();
+        $result = $this->subject->create(['group_id' => 'identifier']);
 
-        $result = $this->subject->create($message->getData());
+        $this->assertInstanceOf(GroupInterface::class, $result);
+        $this->assertEquals('identifier', $result->getIdentifier());
+    }
 
-        $this->assertInstanceOf(MessageInterface::class, $result);
-        $this->assertEquals($message, $result);
+    public function testCreateError(): void
+    {
+        $this->expectException(LtiExceptionInterface::class);
+        $this->expectExceptionMessage('Error during group creation: Undefined index: group_id');
+
+        $this->subject->create([]);
     }
 }

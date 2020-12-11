@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace OAT\Library\Lti1p3Nrps\Tests\Unit\Model\Member;
 
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
+use OAT\Library\Lti1p3Nrps\Model\Group\GroupCollectionInterface;
 use OAT\Library\Lti1p3Nrps\Model\Member\MemberInterface;
 use OAT\Library\Lti1p3Nrps\Model\Message\MessageInterface;
 use OAT\Library\Lti1p3Nrps\Tests\Traits\NrpsDomainTestingTrait;
@@ -38,6 +39,9 @@ class MemberTest extends TestCase
     /** @var MessageInterface */
     private $message;
 
+    /** @var GroupCollectionInterface */
+    private $groups;
+
     /** @var MemberInterface */
     private $subject;
 
@@ -45,6 +49,8 @@ class MemberTest extends TestCase
     {
         $this->userIdentity = $this->createTestUserIdentity();
         $this->message = $this->createTestMessage();
+        $this->groups = $this->createTestGroupCollection();
+
         $this->subject = $this->createTestMember();
     }
 
@@ -78,7 +84,15 @@ class MemberTest extends TestCase
                 'middle_name' => 'userMiddleName',
                 'locale' => 'userLocale',
                 'picture' => 'userPicture',
-                'message' =>[$this->message->getData()]
+                'message' => [$this->message->getData()],
+                'group_enrollments' => [
+                    [
+                        'group_id' => 'group1'
+                    ],
+                    [
+                        'group_id' => 'group2'
+                    ],
+                ]
             ],
             $this->subject->getProperties()
         );
@@ -100,6 +114,11 @@ class MemberTest extends TestCase
     public function testGetMessage(): void
     {
         $this->assertEquals($this->message, $this->subject->getMessage());
+    }
+
+    public function testGetGroups(): void
+    {
+        $this->assertEquals($this->groups, $this->subject->getGroups());
     }
 
     public function testJsonSerialize()

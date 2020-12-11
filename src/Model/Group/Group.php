@@ -20,23 +20,27 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Service\Server\Builder;
+namespace OAT\Library\Lti1p3Nrps\Model\Group;
 
-use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
-use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
-
-interface MembershipServiceServerBuilderInterface
+class Group implements GroupInterface
 {
-    public function buildContextMembership(
-        RegistrationInterface $registration,
-        string $role = null,
-        int $limit = null
-    ): MembershipInterface;
+    /** @var string */
+    private $identifier;
 
-    public function buildResourceLinkMembership(
-        RegistrationInterface $registration,
-        string $resourceLinkIdentifier,
-        string $role = null,
-        int $limit = null
-    ): MembershipInterface;
+    public function __construct(string $identifier)
+    {
+        $this->identifier = $identifier;
+    }
+
+    public function getIdentifier(): string
+    {
+        return $this->identifier;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'group_id' => $this->identifier
+        ];
+    }
 }

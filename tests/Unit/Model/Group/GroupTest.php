@@ -20,23 +20,36 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Service\Server\Builder;
+namespace OAT\Library\Lti1p3Nrps\Tests\Unit\Model\Group;
 
-use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
-use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
+use OAT\Library\Lti1p3Nrps\Model\Group\GroupInterface;
+use OAT\Library\Lti1p3Nrps\Tests\Traits\NrpsDomainTestingTrait;
+use PHPUnit\Framework\TestCase;
 
-interface MembershipServiceServerBuilderInterface
+class GroupTest extends TestCase
 {
-    public function buildContextMembership(
-        RegistrationInterface $registration,
-        string $role = null,
-        int $limit = null
-    ): MembershipInterface;
+    use NrpsDomainTestingTrait;
 
-    public function buildResourceLinkMembership(
-        RegistrationInterface $registration,
-        string $resourceLinkIdentifier,
-        string $role = null,
-        int $limit = null
-    ): MembershipInterface;
+    /** @var GroupInterface */
+    private $subject;
+
+    protected function setUp(): void
+    {
+        $this->subject = $this->createTestGroup();
+    }
+
+    public function testGetIdentifier(): void
+    {
+        $this->assertEquals('identifier', $this->subject->getIdentifier());
+    }
+
+    public function testJsonSerialize()
+    {
+        $this->assertEquals(
+            [
+                'group_id' => 'identifier'
+            ],
+            $this->subject->jsonSerialize()
+        );
+    }
 }

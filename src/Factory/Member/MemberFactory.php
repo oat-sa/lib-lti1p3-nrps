@@ -27,8 +27,11 @@ use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
 use OAT\Library\Lti1p3Core\User\UserIdentityFactory;
 use OAT\Library\Lti1p3Core\User\UserIdentityFactoryInterface;
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
+use OAT\Library\Lti1p3Nrps\Factory\Group\GroupFactoryInterface;
+use OAT\Library\Lti1p3Nrps\Factory\Message\GroupFactory;
 use OAT\Library\Lti1p3Nrps\Factory\Message\MessageFactory;
 use OAT\Library\Lti1p3Nrps\Factory\Message\MessageFactoryInterface;
+use OAT\Library\Lti1p3Nrps\Model\Group\GroupCollection;
 use OAT\Library\Lti1p3Nrps\Model\Member\Member;
 use OAT\Library\Lti1p3Nrps\Model\Member\MemberInterface;
 use Throwable;
@@ -41,12 +44,17 @@ class MemberFactory implements MemberFactoryInterface
     /** @var MessageFactoryInterface */
     private $messageFactory;
 
+    /** @var GroupFactoryInterface */
+    private $groupFactory;
+
     public function __construct(
         UserIdentityFactoryInterface $userIdentityFactory = null,
-        MessageFactoryInterface $messageFactory = null
+        MessageFactoryInterface $messageFactory = null,
+        GroupFactoryInterface $groupFactory = null
     ) {
         $this->userIdentityFactory = $userIdentityFactory ?? new UserIdentityFactory();
         $this->messageFactory = $messageFactory ?? new MessageFactory();
+        $this->groupFactory = $groupFactory ?? new GroupFactory();
     }
 
     /**
@@ -55,12 +63,28 @@ class MemberFactory implements MemberFactoryInterface
     public function create(array $data): MemberInterface
     {
         try {
+            $message = null;
+            $groupCollection = null;
+
+            if (isset($data['message'])) {
+                $message = $this->messageFactory->create(current($data['message']));
+            }
+
+            if (isset($data['group_enrollments'])) {
+                $groupCollection = new GroupCollection();
+
+                foreach ($data['group_enrollments'] as $enrollment) {
+                    $groupCollection->add($this->groupFactory->create($enrollment));
+                }
+            }
+
             return new Member(
                 $this->createMemberUserIdentity($data),
                 $data['status'] ?? MemberInterface::STATUS_ACTIVE,
                 $data['roles'] ?? [],
                 $data,
-                isset($data['message']) ? $this->messageFactory->create(current($data['message'])) : null
+                $message,
+                $groupCollection
             );
 
         } catch (Throwable $exception) {

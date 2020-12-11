@@ -25,9 +25,11 @@ namespace OAT\Library\Lti1p3Nrps\Tests\Integration\Service\Server;
 use Exception;
 use OAT\Library\Lti1p3Core\Service\Server\Validator\AccessTokenRequestValidationResult;
 use OAT\Library\Lti1p3Core\Service\Server\Validator\AccessTokenRequestValidator;
+use OAT\Library\Lti1p3Core\Tests\Resource\Logger\TestLogger;
 use OAT\Library\Lti1p3Core\Tests\Traits\NetworkTestingTrait;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializer;
+use OAT\Library\Lti1p3Nrps\Service\MembershipServiceInterface;
 use OAT\Library\Lti1p3Nrps\Service\Server\Builder\MembershipServiceServerBuilderInterface;
 use OAT\Library\Lti1p3Nrps\Service\Server\MembershipServiceServer;
 use OAT\Library\Lti1p3Nrps\Tests\Traits\NrpsDomainTestingTrait;
@@ -49,6 +51,9 @@ class MembershipServiceServerTest extends TestCase
     /** @var MembershipSerializer */
     private $serializer;
 
+    /** @var TestLogger */
+    private $logger;
+
     /** @var MembershipServiceServer */
     private $subject;
 
@@ -57,8 +62,15 @@ class MembershipServiceServerTest extends TestCase
         $this->validatorMock = $this->createMock(AccessTokenRequestValidator::class);
         $this->builderMock = $this->createMock(MembershipServiceServerBuilderInterface::class);
         $this->serializer = new MembershipSerializer();
+        $this->logger = new TestLogger();
 
-        $this->subject = new MembershipServiceServer( $this->validatorMock, $this->builderMock);
+        $this->subject = new MembershipServiceServer(
+            $this->validatorMock,
+            $this->builderMock,
+            null,
+            null,
+            $this->logger
+        );
     }
 
     public function testContextMembershipRequestHandling(): void
@@ -66,7 +78,14 @@ class MembershipServiceServerTest extends TestCase
         $registration = $this->createTestRegistration();
         $membership = $this->createTestMembership();
 
-        $request = $this->createServerRequest('GET', 'http://example.com/membership');
+        $request = $this->createServerRequest(
+            'GET',
+            'http://example.com/membership',
+            [],
+            [
+                'Accept' => MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP
+            ]
+        );
 
         $validationResult = new AccessTokenRequestValidationResult($registration);
 
@@ -104,7 +123,11 @@ class MembershipServiceServerTest extends TestCase
 
         $request = $this->createServerRequest(
             'GET',
-            sprintf('http://example.com/membership?role=%s&limit=%s', $role, $limit)
+            sprintf('http://example.com/membership?role=%s&limit=%s', $role, $limit),
+            [],
+            [
+                'Accept' => MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP
+            ]
         );
 
         $validationResult = new AccessTokenRequestValidationResult($registration);
@@ -142,7 +165,11 @@ class MembershipServiceServerTest extends TestCase
 
         $request = $this->createServerRequest(
             'GET',
-            sprintf('http://example.com/membership?rlid=%s', $resourceIdentifier)
+            sprintf('http://example.com/membership?rlid=%s', $resourceIdentifier),
+            [],
+            [
+                'Accept' => MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP
+            ]
         );
 
         $validationResult = new AccessTokenRequestValidationResult($registration);
@@ -182,7 +209,11 @@ class MembershipServiceServerTest extends TestCase
 
         $request = $this->createServerRequest(
             'GET',
-            sprintf('http://example.com/membership?rlid=%s&role=%s&limit=%s', $resourceIdentifier, $role, $limit)
+            sprintf('http://example.com/membership?rlid=%s&role=%s&limit=%s', $resourceIdentifier, $role, $limit),
+            [],
+            [
+                'Accept' => MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP
+            ]
         );
 
         $validationResult = new AccessTokenRequestValidationResult($registration);
@@ -212,12 +243,44 @@ class MembershipServiceServerTest extends TestCase
         $this->assertEquals($membership->getMembers(), $result->getMembers());
     }
 
+    public function testContentTypeError(): void
+    {
+        $error = sprintf('Not acceptable, accepts: %s', MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP);
+
+        $request = $this->createServerRequest(
+            'GET',
+            'http://example.com/membership',
+            [],
+            [
+                'Accept' => 'invalid'
+            ]
+        );
+
+        $this->validatorMock
+            ->expects($this->never())
+            ->method('validate');
+
+        $response = $this->subject->handle($request);
+
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertEquals(406, $response->getStatusCode());
+        $this->assertEquals($error, $response->getBody()->__toString());
+        $this->assertTrue($this->logger->hasLog('error', $error));
+    }
+
     public function testValidationError(): void
     {
         $registration = $this->createTestRegistration();
         $error = 'validation error';
 
-        $request = $this->createServerRequest('GET', 'http://example.com/membership');
+        $request = $this->createServerRequest(
+            'GET',
+            'http://example.com/membership',
+            [],
+            [
+                'Accept' => MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP
+            ]
+        );
 
         $validationResult = new AccessTokenRequestValidationResult($registration, null, [], $error);
 
@@ -232,13 +295,21 @@ class MembershipServiceServerTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(401, $response->getStatusCode());
         $this->assertEquals($error, $response->getBody()->__toString());
+        $this->assertTrue($this->logger->hasLog('error', $error));
     }
 
     public function testBuilderError(): void
     {
         $registration = $this->createTestRegistration();
 
-        $request = $this->createServerRequest('GET', 'http://example.com/membership');
+        $request = $this->createServerRequest(
+            'GET',
+            'http://example.com/membership',
+            [],
+            [
+                'Accept' => MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP
+            ]
+        );
 
         $validationResult = new AccessTokenRequestValidationResult($registration);
 
@@ -259,5 +330,6 @@ class MembershipServiceServerTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertEquals('Internal membership service error', $response->getBody()->__toString());
+        $this->assertTrue($this->logger->hasLog('error', 'builder error'));
     }
 }

@@ -29,6 +29,10 @@ use OAT\Library\Lti1p3Core\Tests\Traits\DomainTestingTrait;
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
 use OAT\Library\Lti1p3Nrps\Model\Context\Context;
 use OAT\Library\Lti1p3Nrps\Model\Context\ContextInterface;
+use OAT\Library\Lti1p3Nrps\Model\Group\Group;
+use OAT\Library\Lti1p3Nrps\Model\Group\GroupCollection;
+use OAT\Library\Lti1p3Nrps\Model\Group\GroupCollectionInterface;
+use OAT\Library\Lti1p3Nrps\Model\Group\GroupInterface;
 use OAT\Library\Lti1p3Nrps\Model\Member\Member;
 use OAT\Library\Lti1p3Nrps\Model\Member\MemberCollection;
 use OAT\Library\Lti1p3Nrps\Model\Member\MemberCollectionInterface;
@@ -61,16 +65,31 @@ trait NrpsDomainTestingTrait
         ]);
     }
 
+    private function createTestGroup(string $identifier = 'identifier'): GroupInterface
+    {
+        return new Group($identifier);
+    }
+
+    private function createTestGroupCollection(array $groups = null): GroupCollectionInterface
+    {
+        return new GroupCollection($groups ?? [
+            $this->createTestGroup('group1'),
+            $this->createTestGroup('group2'),
+        ]);
+    }
+
     private function createTestMember(
         UserIdentityInterface $userIdentity = null,
         string $status = MemberInterface::STATUS_ACTIVE,
         array $roles = ['Learner'],
         array $properties = ['propertyName' => 'propertyValue'],
-        MessageInterface $message = null
+        MessageInterface $message = null,
+        GroupCollectionInterface $groups = null
     ): MemberInterface {
 
         $userIdentity = $userIdentity ?? $this->createTestUserIdentity();
         $message = $message ?? $this->createTestMessage();
+        $groups = $groups ?? $this->createTestGroupCollection();
 
         return new Member(
             $userIdentity,
@@ -87,9 +106,11 @@ trait NrpsDomainTestingTrait
                 'middle_name' => $userIdentity->getMiddleName(),
                 'locale' => $userIdentity->getLocale(),
                 'picture' => $userIdentity->getPicture(),
-                'message' => [$message->getData()]
+                'message' => [$message->getData()],
+                'group_enrollments' => $groups->jsonSerialize()
             ],
-            $message
+            $message,
+            $groups
         );
     }
 

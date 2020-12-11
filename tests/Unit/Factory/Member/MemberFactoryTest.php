@@ -50,6 +50,14 @@ class MemberFactoryTest extends TestCase
                 [
                     'claimName' => 'claimValue'
                 ]
+            ],
+            'group_enrollments' => [
+                [
+                    'group_id' => 'group1'
+                ],
+                [
+                    'group_id' => 'group2'
+                ]
             ]
         ];
 
@@ -61,6 +69,8 @@ class MemberFactoryTest extends TestCase
         $this->assertEquals(MemberInterface::STATUS_ACTIVE, $result->getStatus());
         $this->assertEquals(['Learner'], $result->getRoles());
         $this->assertEquals('claimValue', $result->getMessage()->getClaim('claimName'));
+        $this->assertCount(2, $result->getGroups());
+        $this->assertEquals('group1', current($result->getGroups()->getIterator()->getArrayCopy())->getIdentifier());
     }
 
     public function testCreateSuccessWithDefaultStatus(): void

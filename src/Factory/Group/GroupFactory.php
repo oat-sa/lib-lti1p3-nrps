@@ -20,23 +20,30 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Service\Server\Builder;
+namespace OAT\Library\Lti1p3Nrps\Factory\Message;
 
-use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
-use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
+use OAT\Library\Lti1p3Core\Exception\LtiException;
+use OAT\Library\Lti1p3Nrps\Factory\Group\GroupFactoryInterface;
+use OAT\Library\Lti1p3Nrps\Model\Group\Group;
+use OAT\Library\Lti1p3Nrps\Model\Group\GroupInterface;
+use Throwable;
 
-interface MembershipServiceServerBuilderInterface
+class GroupFactory implements GroupFactoryInterface
 {
-    public function buildContextMembership(
-        RegistrationInterface $registration,
-        string $role = null,
-        int $limit = null
-    ): MembershipInterface;
+    /**
+     * @throws LtiException
+     */
+    public function create(array $data): GroupInterface
+    {
+        try {
+            return new Group($data['group_id']);
 
-    public function buildResourceLinkMembership(
-        RegistrationInterface $registration,
-        string $resourceLinkIdentifier,
-        string $role = null,
-        int $limit = null
-    ): MembershipInterface;
+        } catch (Throwable $exception) {
+            throw new LtiException(
+                sprintf('Error during group creation: %s', $exception->getMessage()),
+                $exception->getCode(),
+                $exception
+            );
+        }
+    }
 }

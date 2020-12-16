@@ -29,7 +29,7 @@ use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializerInterface;
 use OAT\Library\Lti1p3Nrps\Tests\Traits\NrpsDomainTestingTrait;
 use PHPUnit\Framework\TestCase;
 
-class ContextFactoryTest extends TestCase
+class MembershipSerializerTest extends TestCase
 {
     use NrpsDomainTestingTrait;
 
@@ -48,7 +48,7 @@ class ContextFactoryTest extends TestCase
         $this->assertEquals(json_encode($membership), $this->subject->serialize($membership));
     }
 
-    public function testDeserializeSuccess(): void
+    public function testDeserializeSuccessWithoutGroups(): void
     {
         $data = [
             'id' => 'identifier',
@@ -74,6 +74,41 @@ class ContextFactoryTest extends TestCase
             $result->getMembers()->get('userIdentifier')->getUserIdentity()->getIdentifier()
         );
         $this->assertEquals(['Learner'], $result->getMembers()->get('userIdentifier')->getRoles());
+        $this->assertNull($result->getMembers()->get('userIdentifier')->getGroups());
+    }
+
+    public function testDeserializeSuccessWithGroups(): void
+    {
+        $data = [
+            'id' => 'identifier',
+            'context' => [
+                'id' => 'contextIdentifier'
+            ],
+            'members' => [
+                [
+                    'user_id' => 'userIdentifier',
+                    'roles' => ['Learner'],
+                    'group_enrollments' => [
+                        ['group_id' => 'group1'],
+                        ['group_id' => 'group2'],
+                    ]
+                ]
+            ]
+        ];
+
+        $result = $this->subject->deserialize(json_encode($data));
+
+        $this->assertInstanceOf(MembershipInterface::class, $result);
+
+        $this->assertEquals('identifier', $result->getIdentifier());
+        $this->assertEquals('contextIdentifier', $result->getContext()->getIdentifier());
+        $this->assertEquals(
+            'userIdentifier',
+            $result->getMembers()->get('userIdentifier')->getUserIdentity()->getIdentifier()
+        );
+        $this->assertEquals(['Learner'], $result->getMembers()->get('userIdentifier')->getRoles());
+        $this->assertTrue($result->getMembers()->get('userIdentifier')->getGroups()->has('group1'));
+        $this->assertTrue($result->getMembers()->get('userIdentifier')->getGroups()->has('group2'));
     }
 
     public function testDeserializeError(): void

@@ -22,9 +22,7 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Nrps\Model\Group;
 
-use JsonSerializable;
-
-interface GroupInterface extends JsonSerializable
+interface GroupInterface
 {
     public function getIdentifier(): string;
 }

@@ -86,7 +86,10 @@ class GroupCollectionTest extends TestCase
     public function testJsonSerialize(): void
     {
         $this->assertEquals(
-            array_values($this->subject->getIterator()->getArrayCopy()),
+            [
+                ['group_id' => 'group1'],
+                ['group_id' => 'group2'],
+            ],
             $this->subject->jsonSerialize()
         );
     }

@@ -38,7 +38,33 @@ class MemberFactoryTest extends TestCase
         $this->subject = new MemberFactory();
     }
 
-    public function testCreateSuccess(): void
+    public function testCreateSuccessWithoutGroups(): void
+    {
+        $data = [
+            'user_id' => 'identifier',
+            'status' => MemberInterface::STATUS_ACTIVE,
+            'roles' => [
+                'Learner'
+            ],
+            'message' => [
+                [
+                    'claimName' => 'claimValue'
+                ]
+            ]
+        ];
+
+        $result = $this->subject->create($data);
+
+        $this->assertInstanceOf(MemberInterface::class, $result);
+
+        $this->assertEquals('identifier', $result->getUserIdentity()->getIdentifier());
+        $this->assertEquals(MemberInterface::STATUS_ACTIVE, $result->getStatus());
+        $this->assertEquals(['Learner'], $result->getRoles());
+        $this->assertEquals('claimValue', $result->getMessage()->getClaim('claimName'));
+        $this->assertNull($result->getGroups());
+    }
+
+    public function testCreateSuccessWithGroups(): void
     {
         $data = [
             'user_id' => 'identifier',

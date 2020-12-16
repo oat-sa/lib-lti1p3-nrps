@@ -20,10 +20,9 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Factory\Message;
+namespace OAT\Library\Lti1p3Nrps\Factory\Group;
 
 use OAT\Library\Lti1p3Core\Exception\LtiException;
-use OAT\Library\Lti1p3Nrps\Factory\Group\GroupFactoryInterface;
 use OAT\Library\Lti1p3Nrps\Model\Group\Group;
 use OAT\Library\Lti1p3Nrps\Model\Group\GroupInterface;
 use Throwable;

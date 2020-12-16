@@ -36,11 +36,4 @@ class Group implements GroupInterface
     {
         return $this->identifier;
     }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            'group_id' => $this->identifier
-        ];
-    }
 }

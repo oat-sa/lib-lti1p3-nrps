@@ -62,7 +62,8 @@ class MembershipServiceClient implements MembershipServiceInterface
         RegistrationInterface $registration,
         LtiMessagePayloadInterface $payload,
         string $role = null,
-        int $limit = null
+        int $limit = null,
+        bool $groups = false
     ): MembershipInterface {
         try {
             if (null === $payload->getNrps()) {
@@ -74,7 +75,8 @@ class MembershipServiceClient implements MembershipServiceInterface
                 $payload->getNrps()->getContextMembershipsUrl(),
                 null,
                 $role,
-                $limit
+                $limit,
+                $groups
             );
         } catch (Throwable $exception) {
             throw new LtiException(
@@ -93,7 +95,8 @@ class MembershipServiceClient implements MembershipServiceInterface
         RegistrationInterface $registration,
         string $membershipServiceUrl,
         string $role = null,
-        int $limit = null
+        int $limit = null,
+        bool $groups = false
     ): MembershipInterface {
         try {
             return $this->getMembership(
@@ -101,7 +104,8 @@ class MembershipServiceClient implements MembershipServiceInterface
                 $membershipServiceUrl,
                 null,
                 $role,
-                $limit
+                $limit,
+                $groups
             );
         } catch (Throwable $exception) {
             throw new LtiException(
@@ -120,7 +124,8 @@ class MembershipServiceClient implements MembershipServiceInterface
         RegistrationInterface $registration,
         LtiMessagePayloadInterface $payload,
         string $role = null,
-        int $limit = null
+        int $limit = null,
+        bool $groups = false
     ): MembershipInterface {
         try {
             if (null === $payload->getResourceLink()) {
@@ -136,7 +141,8 @@ class MembershipServiceClient implements MembershipServiceInterface
                 $payload->getNrps()->getContextMembershipsUrl(),
                 $payload->getResourceLink()->getIdentifier(),
                 $role,
-                $limit
+                $limit,
+                $groups
             );
         } catch (Throwable $exception) {
             throw new LtiException(
@@ -156,7 +162,8 @@ class MembershipServiceClient implements MembershipServiceInterface
         string $membershipServiceUrl,
         string $resourceLinkIdentifier,
         string $role = null,
-        int $limit = null
+        int $limit = null,
+        bool $groups = false
     ): MembershipInterface {
         try {
             return $this->getMembership(
@@ -164,7 +171,8 @@ class MembershipServiceClient implements MembershipServiceInterface
                 $membershipServiceUrl,
                 $resourceLinkIdentifier,
                 $role,
-                $limit
+                $limit,
+                $groups
             );
         } catch (Throwable $exception) {
             throw new LtiException(
@@ -180,12 +188,13 @@ class MembershipServiceClient implements MembershipServiceInterface
         string $membershipServiceUrl,
         string $resourceLinkIdentifier = null,
         string $role = null,
-        int $limit = null
+        int $limit = null,
+        bool $groups = false
     ): MembershipInterface {
         $response = $this->client->request(
             $registration,
             'GET',
-            $this->buildNrpsEndpointUrl($membershipServiceUrl, $resourceLinkIdentifier, $role, $limit),
+            $this->buildNrpsEndpointUrl($membershipServiceUrl, $resourceLinkIdentifier, $role, $limit, $groups),
             [
                 'headers' => ['Accept' => static::CONTENT_TYPE_MEMBERSHIP]
             ],
@@ -208,13 +217,18 @@ class MembershipServiceClient implements MembershipServiceInterface
         string $membershipServiceUrl,
         string $resourceLinkIdentifier = null,
         string $role = null,
-        int $limit = null
+        int $limit = null,
+        bool $groups = false
     ): string {
         $parameters = array_filter([
             'rlid' => $resourceLinkIdentifier,
             'role' => $role,
             'limit' => $limit,
         ]);
+
+        if ($groups) {
+            $parameters['groups'] = 'true';
+        }
 
         if (empty($parameters)) {
             return $membershipServiceUrl;

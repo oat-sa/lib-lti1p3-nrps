@@ -69,7 +69,7 @@ class MemberTest extends TestCase
         $this->assertEquals(['Learner'], $this->subject->getRoles());
     }
 
-    public function testGetProperties(): void
+    public function testGetPropertiesWithoutGroups(): void
     {
         $this->assertEquals(
             [
@@ -85,16 +85,39 @@ class MemberTest extends TestCase
                 'locale' => 'userLocale',
                 'picture' => 'userPicture',
                 'message' => [$this->message->getData()],
-                'group_enrollments' => [
-                    [
-                        'group_id' => 'group1'
-                    ],
-                    [
-                        'group_id' => 'group2'
-                    ],
-                ]
             ],
             $this->subject->getProperties()
+        );
+    }
+
+    public function testGetPropertiesWithGroups(): void
+    {
+        $subject = $this->createTestMember(
+            null,
+            MemberInterface::STATUS_ACTIVE,
+            ['Learner'],
+            ['propertyName' => 'propertyValue'],
+            $this->message,
+            $this->groups
+        );
+
+        $this->assertEquals(
+            [
+                'status' => 'Active',
+                'roles' => ['Learner'],
+                'propertyName' => 'propertyValue',
+                'user_id' => 'userIdentifier',
+                'name' => 'userName',
+                'email' => 'userEmail',
+                'given_name' => 'userGivenName',
+                'family_name' => 'userFamilyName',
+                'middle_name' => 'userMiddleName',
+                'locale' => 'userLocale',
+                'picture' => 'userPicture',
+                'message' => [$this->message->getData()],
+                'group_enrollments' => $this->groups->jsonSerialize()
+            ],
+            $subject->getProperties()
         );
     }
 
@@ -116,12 +139,26 @@ class MemberTest extends TestCase
         $this->assertEquals($this->message, $this->subject->getMessage());
     }
 
-    public function testGetGroups(): void
+    public function testGetGroupsWithoutGroups(): void
     {
-        $this->assertEquals($this->groups, $this->subject->getGroups());
+        $this->assertNull($this->subject->getGroups());
     }
 
-    public function testJsonSerialize()
+    public function testGetGroupsWithGroups(): void
+    {
+        $subject = $this->createTestMember(
+            null,
+            MemberInterface::STATUS_ACTIVE,
+            ['Learner'],
+            ['propertyName' => 'propertyValue'],
+            $this->message,
+            $this->groups
+        );
+
+        $this->assertEquals($this->groups, $subject->getGroups());
+    }
+
+    public function testJsonSerializeWithoutGroups()
     {
         $this->assertEquals(
             [
@@ -139,6 +176,37 @@ class MemberTest extends TestCase
                 'message' => [$this->message->getData()],
             ],
             $this->subject->jsonSerialize()
+        );
+    }
+
+    public function testJsonSerializeWithGroups()
+    {
+        $subject = $this->createTestMember(
+            null,
+            MemberInterface::STATUS_ACTIVE,
+            ['Learner'],
+            ['propertyName' => 'propertyValue'],
+            $this->message,
+            $this->groups
+        );
+
+        $this->assertEquals(
+            [
+                'propertyName' => 'propertyValue',
+                'status' => 'Active',
+                'roles' => ['Learner'],
+                'user_id' => 'userIdentifier',
+                'name' => 'userName',
+                'email' => 'userEmail',
+                'given_name' => 'userGivenName',
+                'family_name' => 'userFamilyName',
+                'middle_name' => 'userMiddleName',
+                'locale' => 'userLocale',
+                'picture' => 'userPicture',
+                'message' => [$this->message->getData()],
+                'group_enrollments' => $this->groups->jsonSerialize()
+            ],
+            $subject->jsonSerialize()
         );
     }
 }

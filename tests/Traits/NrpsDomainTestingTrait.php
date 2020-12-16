@@ -89,29 +89,26 @@ trait NrpsDomainTestingTrait
 
         $userIdentity = $userIdentity ?? $this->createTestUserIdentity();
         $message = $message ?? $this->createTestMessage();
-        $groups = $groups ?? $this->createTestGroupCollection();
 
-        return new Member(
-            $userIdentity,
-            $status,
-            $roles,
-            $properties + [
-                'status' => $status,
-                'roles' => $roles,
-                'user_id' => $userIdentity->getIdentifier(),
-                'name' => $userIdentity->getName(),
-                'email' => $userIdentity->getEmail(),
-                'given_name' => $userIdentity->getGivenName(),
-                'family_name' => $userIdentity->getFamilyName(),
-                'middle_name' => $userIdentity->getMiddleName(),
-                'locale' => $userIdentity->getLocale(),
-                'picture' => $userIdentity->getPicture(),
-                'message' => [$message->getData()],
-                'group_enrollments' => $groups->jsonSerialize()
-            ],
-            $message,
-            $groups
-        );
+        $properties = $properties + [
+            'status' => $status,
+            'roles' => $roles,
+            'user_id' => $userIdentity->getIdentifier(),
+            'name' => $userIdentity->getName(),
+            'email' => $userIdentity->getEmail(),
+            'given_name' => $userIdentity->getGivenName(),
+            'family_name' => $userIdentity->getFamilyName(),
+            'middle_name' => $userIdentity->getMiddleName(),
+            'locale' => $userIdentity->getLocale(),
+            'picture' => $userIdentity->getPicture(),
+            'message' => [$message->getData()],
+        ];
+
+        if (null !== $groups) {
+            $properties['group_enrollments'] = $groups->jsonSerialize();
+        }
+
+        return new Member($userIdentity, $status, $roles, $properties, $message, $groups);
     }
 
     private function createTestMemberCollection(array $members = null): MemberCollectionInterface

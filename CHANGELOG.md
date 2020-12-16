@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+3.1.0
+-----
+
+* Added members groups enrollments handling on platform (server) and tool (client) sides
+* Updated documentation
+
 3.0.0
 -----
 

@@ -42,14 +42,4 @@ class GroupTest extends TestCase
     {
         $this->assertEquals('identifier', $this->subject->getIdentifier());
     }
-
-    public function testJsonSerialize()
-    {
-        $this->assertEquals(
-            [
-                'group_id' => 'identifier'
-            ],
-            $this->subject->jsonSerialize()
-        );
-    }
 }

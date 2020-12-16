@@ -23,8 +23,8 @@ declare(strict_types=1);
 namespace OAT\Library\Lti1p3Nrps\Tests\Unit\Factory\Group;
 
 use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
+use OAT\Library\Lti1p3Nrps\Factory\Group\GroupFactory;
 use OAT\Library\Lti1p3Nrps\Factory\Group\GroupFactoryInterface;
-use OAT\Library\Lti1p3Nrps\Factory\Message\GroupFactory;
 use OAT\Library\Lti1p3Nrps\Model\Group\GroupInterface;
 use PHPUnit\Framework\TestCase;
 

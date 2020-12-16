@@ -94,19 +94,22 @@ class MembershipServiceServer implements MembershipServiceInterface, RequestHand
             $rlId = $parameters['rlid'] ?? null;
             $role = $parameters['role'] ?? null;
             $limit = array_key_exists('limit', $parameters) ? intval($parameters['limit']) : null;
+            $groups = array_key_exists('groups', $parameters) ? 'true' == $parameters['limit'] : false;
 
             if (null !== $rlId) {
                 $membership = $this->builder->buildResourceLinkMembership(
                     $validationResult->getRegistration(),
                     $rlId,
                     $role,
-                    $limit
+                    $limit,
+                    $groups
                 );
             } else {
                 $membership = $this->builder->buildContextMembership(
                     $validationResult->getRegistration(),
                     $role,
-                    $limit
+                    $limit,
+                    $groups
                 );
             }
 

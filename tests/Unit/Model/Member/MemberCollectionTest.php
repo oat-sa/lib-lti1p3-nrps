@@ -86,11 +86,44 @@ class MemberCollectionTest extends TestCase
         }
     }
 
-    public function testJsonSerialize(): void
+    public function testJsonSerializeWithoutGroups(): void
     {
         $this->assertEquals(
             array_values($this->subject->getIterator()->getArrayCopy()),
             $this->subject->jsonSerialize()
+        );
+    }
+
+    public function testJsonSerializeWithGroups(): void
+    {
+        $member1 = $this->createTestMember(
+            $this->createTestUserIdentity('member1'),
+            MemberInterface::STATUS_ACTIVE,
+            ['Learner'],
+            ['propertyName' => 'propertyValue'],
+            $this->createTestMessage(),
+            $this->createTestGroupCollection()
+        );
+
+        $member2 = $this->createTestMember(
+            $this->createTestUserIdentity('member2'),
+            MemberInterface::STATUS_ACTIVE,
+            ['Learner'],
+            ['propertyName' => 'propertyValue'],
+            $this->createTestMessage(),
+            $this->createTestGroupCollection()
+        );
+
+        $subject = $this->createTestMemberCollection(
+            [
+                $member1,
+                $member2
+            ]
+        );
+
+        $this->assertEquals(
+            array_values($subject->getIterator()->getArrayCopy()),
+            $subject->jsonSerialize()
         );
     }
 }

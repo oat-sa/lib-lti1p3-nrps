@@ -41,7 +41,8 @@ $membership = $membershipServiceClient->getContextMembershipFromPayload(
     $registration, // [required] as the tool, it will call the platform of this registration
     $payload,      // [required] from the LTI message payload containing the NRPS claim (got at LTI launch)
     'Learner',     // [optional] we can filter members for a role (default: no filter)
-    10             // [optional] and limit the number of presented members (default: no limit)
+    10,            // [optional] and limit the number of presented members (default: no limit)
+    true           // [optional] and ask the members groups enrollments (default: false)
 );
 
 // or you also can call directly for an given URL (avoid claim construction)
@@ -49,7 +50,8 @@ $membership = $membershipServiceClient->getContextMembership(
     $registration,                     // [required] as the tool, it will call the platform of this registration
     'https://example.com/memberships', // [required] to a given membership service url
     'Learner',                         // [optional] we can filter members for a role (default: no filter)
-    10                                 // [optional] and limit the number of presented members (default: no limit)
+    10,                                // [optional] and limit the number of presented members (default: no limit),
+    true                               // [optional] and ask the members groups enrollments (default: false)
 );
 
 // Membership identifier
@@ -97,7 +99,8 @@ $membership = $membershipServiceClient->getResourceLinkMembershipFromPayload(
     $registration, // [required] as the tool, it will call the platform of this registration
     $payload,      // [required] from the LTI message payload containing the NRPS and ResourceLink claims (got at LTI launch)
     'Learner',     // [optional] we can filter members for a role (default: no filter)
-    10             // [optional] and limit the number of presented members (default: no limit)
+    10,            // [optional] and limit the number of presented members (default: no limit),
+    true           // [optional] and ask the members groups enrollments (default: false)
 );
 
 // or you also can call directly for an given URL and resource link identifier (avoid claims construction)
@@ -106,7 +109,8 @@ $membership = $membershipServiceClient->getResourceLinkMembership(
     'https://example.com/memberships', // [required] to a given membership service url
     'someIdentifier',                  // [required] for a given resource link identifier
     'Learner',                         // [optional] we can filter members for a role (default: no filter)
-    10                                 // [optional] and limit the number of presented members (default: no limit)
+    10,                                // [optional] and limit the number of presented members (default: no limit)
+    true                               // [optional] and ask the members groups enrollments (default: false)
 );
 
 // ...

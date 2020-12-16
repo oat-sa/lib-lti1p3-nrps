@@ -25,6 +25,7 @@ namespace OAT\Library\Lti1p3Nrps\Model\Group;
 use ArrayIterator;
 use OAT\Library\Lti1p3Core\Exception\LtiException;
 use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
+use phpDocumentor\Reflection\Types\Static_;
 
 class GroupCollection implements GroupCollectionInterface
 {
@@ -77,6 +78,12 @@ class GroupCollection implements GroupCollectionInterface
 
     public function jsonSerialize(): array
     {
-        return array_values($this->getIterator()->getArrayCopy());
+        $serialization = [];
+
+        foreach ($this->groups as $group) {
+            $serialization[]  = ['group_id' => $group->getIdentifier()];
+        }
+
+        return $serialization;
     }
 }

@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+4.0.0
+-----
+
+* Added PHP 8 support (and kept >=7.2)
+* Updated oat-sa/lib-lti1p3-core dependency to version 4.0
+* Updated MembershipServiceServerBuilderInterface signature to handle limit as integer  
+* Updated documentation
+
 3.0.0
 -----
 

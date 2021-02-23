@@ -85,7 +85,7 @@ class MemberFactoryTest extends TestCase
     public function testCreateError(): void
     {
         $this->expectException(LtiExceptionInterface::class);
-        $this->expectExceptionMessage('Error during member creation: Undefined index: user_id');
+        $this->expectExceptionMessage('Error during member creation');
 
         $this->subject->create([]);
     }

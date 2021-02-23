@@ -58,7 +58,7 @@ class ContextFactoryTest extends TestCase
     public function testCreateError(): void
     {
         $this->expectException(LtiExceptionInterface::class);
-        $this->expectExceptionMessage('Error during context creation: Undefined index: id');
+        $this->expectExceptionMessage('Error during context creation');
 
         $this->subject->create([]);
     }

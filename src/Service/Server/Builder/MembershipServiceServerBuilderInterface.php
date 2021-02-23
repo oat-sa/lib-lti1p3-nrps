@@ -30,13 +30,13 @@ interface MembershipServiceServerBuilderInterface
     public function buildContextMembership(
         RegistrationInterface $registration,
         string $role = null,
-        string $limit = null
+        int $limit = null
     ): MembershipInterface;
 
     public function buildResourceLinkMembership(
         RegistrationInterface $registration,
         string $resourceLinkIdentifier,
         string $role = null,
-        string $limit = null
+        int $limit = null
     ): MembershipInterface;
 }

@@ -22,8 +22,8 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Nrps\Model\Membership;
 
-use OAT\Library\Lti1p3Nrps\Model\Member\MemberCollectionInterface;
 use OAT\Library\Lti1p3Nrps\Model\Context\ContextInterface;
+use OAT\Library\Lti1p3Nrps\Model\Member\MemberCollectionInterface;
 
 class Membership implements MembershipInterface
 {

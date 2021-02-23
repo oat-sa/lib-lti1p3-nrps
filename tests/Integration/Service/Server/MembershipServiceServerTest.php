@@ -25,6 +25,7 @@ namespace OAT\Library\Lti1p3Nrps\Tests\Integration\Service\Server;
 use Exception;
 use OAT\Library\Lti1p3Core\Service\Server\Validator\AccessTokenRequestValidationResult;
 use OAT\Library\Lti1p3Core\Service\Server\Validator\AccessTokenRequestValidator;
+use OAT\Library\Lti1p3Core\Tests\Resource\Logger\TestLogger;
 use OAT\Library\Lti1p3Core\Tests\Traits\NetworkTestingTrait;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializer;
@@ -34,6 +35,7 @@ use OAT\Library\Lti1p3Nrps\Tests\Traits\NrpsDomainTestingTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LogLevel;
 
 class MembershipServiceServerTest extends TestCase
 {
@@ -49,6 +51,9 @@ class MembershipServiceServerTest extends TestCase
     /** @var MembershipSerializer */
     private $serializer;
 
+    /** @var TestLogger */
+    private $logger;
+
     /** @var MembershipServiceServer */
     private $subject;
 
@@ -57,8 +62,15 @@ class MembershipServiceServerTest extends TestCase
         $this->validatorMock = $this->createMock(AccessTokenRequestValidator::class);
         $this->builderMock = $this->createMock(MembershipServiceServerBuilderInterface::class);
         $this->serializer = new MembershipSerializer();
+        $this->logger = new TestLogger();
 
-        $this->subject = new MembershipServiceServer( $this->validatorMock, $this->builderMock);
+        $this->subject = new MembershipServiceServer(
+            $this->validatorMock,
+            $this->builderMock,
+            $this->serializer,
+            null,
+            $this->logger
+        );
     }
 
     public function testContextMembershipRequestHandling(): void
@@ -93,6 +105,8 @@ class MembershipServiceServerTest extends TestCase
         $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
         $this->assertEquals($membership->getContext(), $result->getContext());
         $this->assertEquals($membership->getMembers(), $result->getMembers());
+
+        $this->assertEmpty($this->logger->getLogs());
     }
 
     public function testContextMembershipRequestHandlingWithRoleAndLimit(): void
@@ -132,6 +146,8 @@ class MembershipServiceServerTest extends TestCase
         $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
         $this->assertEquals($membership->getContext(), $result->getContext());
         $this->assertEquals($membership->getMembers(), $result->getMembers());
+
+        $this->assertEmpty($this->logger->getLogs());
     }
 
     public function testResourceLinkMembershipRequestHandling(): void
@@ -170,6 +186,8 @@ class MembershipServiceServerTest extends TestCase
         $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
         $this->assertEquals($membership->getContext(), $result->getContext());
         $this->assertEquals($membership->getMembers(), $result->getMembers());
+
+        $this->assertEmpty($this->logger->getLogs());
     }
 
     public function testResourceLinkMembershipRequestHandlingWithRoleAndLimit(): void
@@ -210,6 +228,8 @@ class MembershipServiceServerTest extends TestCase
         $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
         $this->assertEquals($membership->getContext(), $result->getContext());
         $this->assertEquals($membership->getMembers(), $result->getMembers());
+
+        $this->assertEmpty($this->logger->getLogs());
     }
 
     public function testValidationError(): void
@@ -232,11 +252,14 @@ class MembershipServiceServerTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(401, $response->getStatusCode());
         $this->assertEquals($error, $response->getBody()->__toString());
+
+        $this->assertTrue($this->logger->hasLog(LogLevel::ERROR, $error));
     }
 
     public function testBuilderError(): void
     {
         $registration = $this->createTestRegistration();
+        $error = 'builder error';
 
         $request = $this->createServerRequest('GET', 'http://example.com/membership');
 
@@ -252,12 +275,14 @@ class MembershipServiceServerTest extends TestCase
             ->expects($this->once())
             ->method('buildContextMembership')
             ->with($registration)
-            ->willThrowException(new Exception('builder error'));
+            ->willThrowException(new Exception($error));
 
         $response = $this->subject->handle($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertEquals('Internal membership service error', $response->getBody()->__toString());
+
+        $this->assertTrue($this->logger->hasLog(LogLevel::ERROR, $error));
     }
 }

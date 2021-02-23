@@ -84,7 +84,9 @@ class MembershipServiceServer implements MembershipServiceInterface
 
             $rlId = $parameters['rlid'] ?? null;
             $role = $parameters['role'] ?? null;
-            $limit = $parameters['limit'] ?? null;
+            $limit = array_key_exists('limit', $parameters)
+                ? intval($parameters['limit'])
+                : null;
 
             if (null !== $rlId) {
                 $membership = $this->builder->buildResourceLinkMembership(

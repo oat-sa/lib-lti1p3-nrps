@@ -22,9 +22,9 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Nrps\Model\Member;
 
+use JsonSerializable;
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
 use OAT\Library\Lti1p3Nrps\Model\Message\MessageInterface;
-use JsonSerializable;
 
 interface MemberInterface extends JsonSerializable
 {

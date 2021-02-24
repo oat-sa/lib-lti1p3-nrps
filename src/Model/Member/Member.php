@@ -23,6 +23,8 @@ declare(strict_types=1);
 namespace OAT\Library\Lti1p3Nrps\Model\Member;
 
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
+use OAT\Library\Lti1p3Core\Util\Collection\Collection;
+use OAT\Library\Lti1p3Core\Util\Collection\CollectionInterface;
 use OAT\Library\Lti1p3Nrps\Model\Message\MessageInterface;
 
 class Member implements MemberInterface
@@ -52,7 +54,7 @@ class Member implements MemberInterface
         $this->userIdentity = $userIdentity;
         $this->status = $status;
         $this->roles = $roles;
-        $this->properties = $properties;
+        $this->properties = (new Collection())->add($properties);
         $this->message = $message;
     }
 
@@ -71,19 +73,9 @@ class Member implements MemberInterface
         return $this->roles;
     }
 
-    public function getProperties(): array
+    public function getProperties(): CollectionInterface
     {
         return $this->properties;
-    }
-
-    public function getProperty(string $propertyName, string $default = null): ?string
-    {
-        return $this->properties[$propertyName] ?? $default;
-    }
-
-    public function hasProperty(string $propertyName): bool
-    {
-        return array_key_exists($propertyName,  $this->properties);
     }
 
     public function getMessage(): ?MessageInterface
@@ -93,10 +85,15 @@ class Member implements MemberInterface
 
     public function jsonSerialize(): array
     {
-        $properties = $this->properties;
+        $properties = $this->properties->all();
 
         if (null !== $this->message) {
-            $properties = $properties + ['message' => [$this->message]];
+            $properties = array_merge(
+                $properties,
+                [
+                    'message' => [$this->message->getData()]
+                ]
+            );
         }
 
         return array_filter($properties);

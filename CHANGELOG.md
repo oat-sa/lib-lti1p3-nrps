@@ -6,7 +6,8 @@ CHANGELOG
 
 * Added PHP 8 support (and kept >=7.2)
 * Updated oat-sa/lib-lti1p3-core dependency to version 4.0
-* Updated MembershipServiceServerBuilderInterface signature to handle limit as integer  
+* Updated MembershipServiceServerBuilderInterface signature to handle limit as integer
+* Updated Member and MemberCollection to rely on core collections  
 * Updated documentation
 
 3.0.0

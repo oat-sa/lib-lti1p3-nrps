@@ -24,6 +24,7 @@ namespace OAT\Library\Lti1p3Nrps\Model\Member;
 
 use JsonSerializable;
 use OAT\Library\Lti1p3Core\User\UserIdentityInterface;
+use OAT\Library\Lti1p3Core\Util\Collection\CollectionInterface;
 use OAT\Library\Lti1p3Nrps\Model\Message\MessageInterface;
 
 interface MemberInterface extends JsonSerializable
@@ -38,11 +39,7 @@ interface MemberInterface extends JsonSerializable
 
     public function getRoles(): array;
 
-    public function getProperties(): array;
-
-    public function getProperty(string $propertyName, string $default = null): ?string;
-
-    public function hasProperty(string $propertyName): bool;
+    public function getProperties(): CollectionInterface;
 
     public function getMessage(): ?MessageInterface;
 }

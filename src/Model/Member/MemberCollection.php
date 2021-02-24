@@ -25,14 +25,18 @@ namespace OAT\Library\Lti1p3Nrps\Model\Member;
 use ArrayIterator;
 use OAT\Library\Lti1p3Core\Exception\LtiException;
 use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
+use OAT\Library\Lti1p3Core\Util\Collection\Collection;
+use OAT\Library\Lti1p3Core\Util\Collection\CollectionInterface;
 
 class MemberCollection implements MemberCollectionInterface
 {
-    /** @var MemberInterface[] */
+    /** @var CollectionInterface|MemberInterface[] */
     private $members = [];
 
     public function __construct(iterable $members = [])
     {
+        $this->members = new Collection();
+
         foreach ($members as $member) {
             $this->add($member);
         }
@@ -40,7 +44,7 @@ class MemberCollection implements MemberCollectionInterface
 
     public function add(MemberInterface $member): MemberCollectionInterface
     {
-        $this->members[$member->getUserIdentity()->getIdentifier()] = $member;
+        $this->members->set($member->getUserIdentity()->getIdentifier(), $member);
 
         return $this;
     }
@@ -54,17 +58,17 @@ class MemberCollection implements MemberCollectionInterface
             throw new LtiException(sprintf('Member with user_id %s not found', $identifier));
         }
 
-        return $this->members[$identifier];
+        return $this->members->getMandatory($identifier);
     }
 
     public function has(string $identifier): bool
     {
-        return array_key_exists($identifier, $this->members);
+        return $this->members->has($identifier);
     }
 
     public function count(): int
     {
-        return $this->getIterator()->count();
+        return $this->members->count();
     }
 
     /**
@@ -72,11 +76,11 @@ class MemberCollection implements MemberCollectionInterface
      */
     public function getIterator(): ArrayIterator
     {
-        return new ArrayIterator($this->members);
+        return $this->members->getIterator();
     }
 
     public function jsonSerialize(): array
     {
-        return array_values($this->getIterator()->getArrayCopy());
+        return array_values($this->members->all());
     }
 }

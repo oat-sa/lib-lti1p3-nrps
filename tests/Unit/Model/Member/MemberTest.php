@@ -80,21 +80,21 @@ class MemberTest extends TestCase
                 'picture' => 'userPicture',
                 'message' =>[$this->message->getData()]
             ],
-            $this->subject->getProperties()
+            $this->subject->getProperties()->all()
         );
     }
 
     public function testGetProperty(): void
     {
-        $this->assertEquals('propertyValue', $this->subject->getProperty('propertyName'));
-        $this->assertEquals('default', $this->subject->getProperty('invalid', 'default'));
-        $this->assertNull($this->subject->getProperty('invalid'));
+        $this->assertEquals('propertyValue', $this->subject->getProperties()->get('propertyName'));
+        $this->assertEquals('default', $this->subject->getProperties()->get('invalid', 'default'));
+        $this->assertNull($this->subject->getProperties()->get('invalid'));
     }
 
     public function testHasProperty(): void
     {
-        $this->assertTrue($this->subject->hasProperty('propertyName'));
-        $this->assertFalse($this->subject->hasProperty('invalid'));
+        $this->assertTrue($this->subject->getProperties()->has('propertyName'));
+        $this->assertFalse($this->subject->getProperties()->has('invalid'));
     }
 
     public function testGetMessage(): void

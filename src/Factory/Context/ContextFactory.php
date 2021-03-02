@@ -37,7 +37,7 @@ class ContextFactory implements ContextFactoryInterface
     {
         try {
             return new Context(
-                $data['id'],
+                (string)$data['id'],
                 $data['label'] ?? null,
                 $data['title'] ?? null
             );

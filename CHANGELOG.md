@@ -5,6 +5,7 @@ CHANGELOG
 -----
 
 * Added PHP 8 support (and kept >=7.2)
+* Updated ContextFactory to cast non string context ids  
 * Updated oat-sa/lib-lti1p3-core dependency to version 4.0
 * Updated MembershipServiceServerBuilderInterface signature to handle limit as integer
 * Updated Member and MemberCollection to rely on core collections  

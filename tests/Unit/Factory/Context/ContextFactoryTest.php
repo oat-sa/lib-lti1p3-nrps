@@ -55,6 +55,16 @@ class ContextFactoryTest extends TestCase
         $this->assertEquals($context, $result);
     }
 
+    public function testCreateSuccessWithIdStringCasting(): void
+    {
+        $result = $this->subject->create([
+            'id' => 1
+        ]);
+
+        $this->assertInstanceOf(ContextInterface::class, $result);
+        $this->assertSame('1', $result->getIdentifier());
+    }
+
     public function testCreateError(): void
     {
         $this->expectException(LtiExceptionInterface::class);

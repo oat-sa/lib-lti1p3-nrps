@@ -28,6 +28,8 @@ interface MessageInterface extends JsonSerializable
 {
     public function getData(): array;
 
+    public function setData(array $data): MessageInterface;
+
     public function getClaim(string $claim);
 
     public function hasClaim(string $claim): bool;

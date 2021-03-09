@@ -28,7 +28,13 @@ interface ContextInterface extends JsonSerializable
 {
     public function getIdentifier(): string;
 
+    public function setIdentifier(string $identifier): ContextInterface;
+
     public function getLabel(): ?string;
 
+    public function setLabel(?string $label): ContextInterface;
+
     public function getTitle(): ?string;
+
+    public function setTitle(?string $title): ContextInterface;
 }

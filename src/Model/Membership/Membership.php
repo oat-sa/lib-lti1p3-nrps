@@ -56,14 +56,35 @@ class Membership implements MembershipInterface
         return $this->identifier;
     }
 
+    public function setIdentifier(string $identifier): MembershipInterface
+    {
+        $this->identifier = $identifier;
+
+        return $this;
+    }
+
     public function getContext(): ContextInterface
     {
         return $this->context;
     }
 
+    public function setContext(ContextInterface $context): MembershipInterface
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
     public function getMembers(): MemberCollectionInterface
     {
         return $this->members;
+    }
+
+    public function setMembers(MemberCollectionInterface $members): MembershipInterface
+    {
+        $this->members = $members;
+
+        return $this;
     }
 
     public function getRelationLink(): ?string

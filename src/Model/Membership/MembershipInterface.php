@@ -24,7 +24,6 @@ namespace OAT\Library\Lti1p3Nrps\Model\Membership;
 
 use JsonSerializable;
 use OAT\Library\Lti1p3Nrps\Model\Context\ContextInterface;
-use OAT\Library\Lti1p3Nrps\Model\Member\Member;
 use OAT\Library\Lti1p3Nrps\Model\Member\MemberCollectionInterface;
 
 interface MembershipInterface extends JsonSerializable
@@ -34,10 +33,15 @@ interface MembershipInterface extends JsonSerializable
 
     public function getIdentifier(): string;
 
-    /** @return Member[]|MemberCollectionInterface */
-    public function getMembers(): MemberCollectionInterface;
+    public function setIdentifier(string $identifier): MembershipInterface;
 
     public function getContext(): ContextInterface;
+
+    public function setContext(ContextInterface $context): MembershipInterface;
+
+    public function getMembers(): MemberCollectionInterface;
+
+    public function setMembers(MemberCollectionInterface $members): MembershipInterface;
 
     public function getRelationLink(): ?string;
 

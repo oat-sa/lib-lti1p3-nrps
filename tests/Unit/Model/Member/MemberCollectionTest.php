@@ -45,6 +45,15 @@ class MemberCollectionTest extends TestCase
         $this->assertEquals(3, $this->subject->count());
     }
 
+    public function testAll(): void
+    {
+        $this->assertCount(3, $this->subject->all());
+
+        foreach ($this->subject->all() as $member) {
+            $this->assertInstanceOf(MemberInterface::class, $member);
+        }
+    }
+
     public function testHas(): void
     {
         $this->assertTrue($this->subject->has('member1'));

@@ -38,19 +38,31 @@ class ContextTest extends TestCase
         $this->subject = $this->createTestContext();
     }
 
-    public function testGetIdentifier(): void
+    public function testIdentifier(): void
     {
         $this->assertEquals('identifier', $this->subject->getIdentifier());
+
+        $this->subject->setIdentifier('newIdentifier');
+
+        $this->assertEquals('newIdentifier', $this->subject->getIdentifier());
     }
 
-    public function testGetLabel(): void
+    public function testLabel(): void
     {
         $this->assertEquals('label', $this->subject->getLabel());
+
+        $this->subject->setLabel('newLabel');
+
+        $this->assertEquals('newLabel', $this->subject->getLabel());
     }
 
-    public function testGetTitle(): void
+    public function testTitle(): void
     {
         $this->assertEquals('title', $this->subject->getTitle());
+
+        $this->subject->setTitle('newTitle');
+
+        $this->assertEquals('newTitle', $this->subject->getTitle());
     }
 
     public function testJsonSerialize()

@@ -38,7 +38,7 @@ class Member implements MemberInterface
     /** @var string[] */
     private $roles;
 
-    /** @var string[] */
+    /** @var CollectionInterface|string[] */
     private $properties;
 
     /** @var MessageInterface|null */
@@ -63,9 +63,23 @@ class Member implements MemberInterface
         return $this->userIdentity;
     }
 
+    public function setUserIdentity(UserIdentityInterface $userIdentity): MemberInterface
+    {
+        $this->userIdentity = $userIdentity;
+
+        return $this;
+    }
+
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    public function setStatus(string $status): MemberInterface
+    {
+        $this->status = $status;
+
+        return $this;
     }
 
     public function getRoles(): array
@@ -73,14 +87,29 @@ class Member implements MemberInterface
         return $this->roles;
     }
 
+    public function setRoles(array $roles): MemberInterface
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
     public function getProperties(): CollectionInterface
     {
         return $this->properties;
     }
 
+
     public function getMessage(): ?MessageInterface
     {
         return $this->message;
+    }
+
+    public function setMessage(?MessageInterface $message): MemberInterface
+    {
+        $this->message = $message;
+
+        return $this;
     }
 
     public function jsonSerialize(): array

@@ -71,7 +71,21 @@ class MembershipServiceServer implements MembershipServiceInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $validationResult = $this->validator->validate($request);
+        if (strtoupper($request->getMethod()) !== 'GET') {
+            $message = 'Not acceptable HTTP method, accepts: GET';
+            $this->logger->error($message);
+
+            return $this->factory->createResponse(405, null, [], $message);
+        }
+
+        if (false === strpos($request->getHeaderLine('Accept'), static::CONTENT_TYPE_MEMBERSHIP)) {
+            $message = sprintf('Not acceptable content type, accepts: %s', static::CONTENT_TYPE_MEMBERSHIP);
+            $this->logger->error($message);
+
+            return $this->factory->createResponse(406, null, [], $message);
+        }
+
+        $validationResult = $this->validator->validate($request, [static::AUTHORIZATION_SCOPE_MEMBERSHIP]);
 
         if ($validationResult->hasError()) {
             $this->logger->error($validationResult->getError());
@@ -87,19 +101,22 @@ class MembershipServiceServer implements MembershipServiceInterface
             $limit = array_key_exists('limit', $parameters)
                 ? intval($parameters['limit'])
                 : null;
+            $offset = array_key_exists('offset', $parameters)
+                ? intval($parameters['offset'])
+                : null;
 
             if (null !== $rlId) {
                 $membership = $this->builder->buildResourceLinkMembership(
-                    $validationResult->getRegistration(),
                     $rlId,
                     $role,
-                    $limit
+                    $limit,
+                    $offset
                 );
             } else {
                 $membership = $this->builder->buildContextMembership(
-                    $validationResult->getRegistration(),
                     $role,
-                    $limit
+                    $limit,
+                    $offset
                 );
             }
 

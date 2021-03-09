@@ -5,11 +5,13 @@ CHANGELOG
 -----
 
 * Added PHP 8 support (and kept >=7.2)
-* Updated models to add fluent setters  
-* Updated ContextFactory to cast non string context ids  
+* Updated models to add fluent setter
+* Updated MembershipServiceServer to check HTTP method and content type
+* Updated MembershipServiceServerBuilderInterface signature to remove registration parameter 
+* Updated MembershipServiceServerBuilderInterface signature to handle limit and offset as integers
+* Updated ContextFactory to cast non string context ids
+* Updated Member and MemberCollection to rely on core collections
 * Updated oat-sa/lib-lti1p3-core dependency to version 4.0
-* Updated MembershipServiceServerBuilderInterface signature to handle limit as integer
-* Updated Member and MemberCollection to rely on core collections  
 * Updated documentation
 
 3.0.0

@@ -29,6 +29,7 @@ use OAT\Library\Lti1p3Core\Tests\Resource\Logger\TestLogger;
 use OAT\Library\Lti1p3Core\Tests\Traits\NetworkTestingTrait;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializer;
+use OAT\Library\Lti1p3Nrps\Service\MembershipServiceInterface;
 use OAT\Library\Lti1p3Nrps\Service\Server\Builder\MembershipServiceServerBuilderInterface;
 use OAT\Library\Lti1p3Nrps\Service\Server\MembershipServiceServer;
 use OAT\Library\Lti1p3Nrps\Tests\Traits\NrpsDomainTestingTrait;
@@ -78,7 +79,14 @@ class MembershipServiceServerTest extends TestCase
         $registration = $this->createTestRegistration();
         $membership = $this->createTestMembership();
 
-        $request = $this->createServerRequest('GET', 'http://example.com/membership');
+        $request = $this->createServerRequest(
+            'GET',
+            'http://example.com/membership',
+            [],
+            [
+                'Accept' => MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP
+            ]
+        );
 
         $validationResult = new AccessTokenRequestValidationResult($registration);
 
@@ -91,7 +99,6 @@ class MembershipServiceServerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildContextMembership')
-            ->with($registration)
             ->willReturn($membership);
 
         $response = $this->subject->handle($request);
@@ -109,16 +116,21 @@ class MembershipServiceServerTest extends TestCase
         $this->assertEmpty($this->logger->getLogs());
     }
 
-    public function testContextMembershipRequestHandlingWithRoleAndLimit(): void
+    public function testContextMembershipRequestHandlingWithRoleAndLimitAndOffset(): void
     {
         $registration = $this->createTestRegistration();
         $membership = $this->createTestMembership();
         $role = 'Learner';
         $limit = 99;
+        $offset = 10;
 
         $request = $this->createServerRequest(
             'GET',
-            sprintf('http://example.com/membership?role=%s&limit=%s', $role, $limit)
+            sprintf('http://example.com/membership?role=%s&limit=%s&offset=%s', $role, $limit, $offset),
+            [],
+            [
+                'Accept' => MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP
+            ]
         );
 
         $validationResult = new AccessTokenRequestValidationResult($registration);
@@ -132,7 +144,7 @@ class MembershipServiceServerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildContextMembership')
-            ->with($registration, $role, $limit)
+            ->with($role, $limit, $offset)
             ->willReturn($membership);
 
         $response = $this->subject->handle($request);
@@ -158,7 +170,11 @@ class MembershipServiceServerTest extends TestCase
 
         $request = $this->createServerRequest(
             'GET',
-            sprintf('http://example.com/membership?rlid=%s', $resourceIdentifier)
+            sprintf('http://example.com/membership?rlid=%s', $resourceIdentifier),
+            [],
+            [
+                'Accept' => MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP
+            ]
         );
 
         $validationResult = new AccessTokenRequestValidationResult($registration);
@@ -172,7 +188,7 @@ class MembershipServiceServerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildResourceLinkMembership')
-            ->with($registration, $resourceIdentifier)
+            ->with($resourceIdentifier)
             ->willReturn($membership);
 
         $response = $this->subject->handle($request);
@@ -200,7 +216,11 @@ class MembershipServiceServerTest extends TestCase
 
         $request = $this->createServerRequest(
             'GET',
-            sprintf('http://example.com/membership?rlid=%s&role=%s&limit=%s', $resourceIdentifier, $role, $limit)
+            sprintf('http://example.com/membership?rlid=%s&role=%s&limit=%s', $resourceIdentifier, $role, $limit),
+            [],
+            [
+                'Accept' => MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP
+            ]
         );
 
         $validationResult = new AccessTokenRequestValidationResult($registration);
@@ -214,7 +234,7 @@ class MembershipServiceServerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildResourceLinkMembership')
-            ->with($registration, $resourceIdentifier, $role, $limit)
+            ->with($resourceIdentifier, $role, $limit)
             ->willReturn($membership);
 
         $response = $this->subject->handle($request);
@@ -232,12 +252,73 @@ class MembershipServiceServerTest extends TestCase
         $this->assertEmpty($this->logger->getLogs());
     }
 
+    public function testHttpMethodError(): void
+    {
+        $request = $this->createServerRequest(
+            'POST',
+            'http://example.com/membership',
+            [],
+            [
+                'Accept' => MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP
+            ]
+        );
+
+        $this->validatorMock
+            ->expects($this->never())
+            ->method('validate');
+
+        $this->builderMock
+            ->expects($this->never())
+            ->method('buildResourceLinkMembership');
+
+        $response = $this->subject->handle($request);
+
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertEquals(405, $response->getStatusCode());
+
+        $this->assertTrue($this->logger->hasLog(LogLevel::ERROR, 'Not acceptable HTTP method, accepts: GET'));
+    }
+
+    public function testContentTypeError(): void
+    {
+        $request = $this->createServerRequest(
+            'GET',
+            'http://example.com/membership',
+            [],
+            [
+                'Accept' => 'invalid'
+            ]
+        );
+
+        $this->validatorMock
+            ->expects($this->never())
+            ->method('validate');
+
+        $this->builderMock
+            ->expects($this->never())
+            ->method('buildResourceLinkMembership');
+
+        $response = $this->subject->handle($request);
+
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertEquals(406, $response->getStatusCode());
+
+        $this->assertTrue($this->logger->hasLog(LogLevel::ERROR, 'Not acceptable content type, accepts: application/vnd.ims.lti-nrps.v2.membershipcontainer+json'));
+    }
+
     public function testValidationError(): void
     {
         $registration = $this->createTestRegistration();
         $error = 'validation error';
 
-        $request = $this->createServerRequest('GET', 'http://example.com/membership');
+        $request = $this->createServerRequest(
+            'GET',
+            'http://example.com/membership',
+            [],
+            [
+                'Accept' => MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP
+            ]
+        );
 
         $validationResult = new AccessTokenRequestValidationResult($registration, null, [], $error);
 
@@ -261,7 +342,14 @@ class MembershipServiceServerTest extends TestCase
         $registration = $this->createTestRegistration();
         $error = 'builder error';
 
-        $request = $this->createServerRequest('GET', 'http://example.com/membership');
+        $request = $this->createServerRequest(
+            'GET',
+            'http://example.com/membership',
+            [],
+            [
+                'Accept' => MembershipServiceInterface::CONTENT_TYPE_MEMBERSHIP
+            ]
+        );
 
         $validationResult = new AccessTokenRequestValidationResult($registration);
 
@@ -274,7 +362,6 @@ class MembershipServiceServerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildContextMembership')
-            ->with($registration)
             ->willThrowException(new Exception($error));
 
         $response = $this->subject->handle($request);

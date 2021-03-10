@@ -28,6 +28,9 @@ use JsonSerializable;
 
 interface MemberCollectionInterface extends Countable, IteratorAggregate, JsonSerializable
 {
+    /** @return MemberInterface[] */
+    public function all(): array;
+
     public function add(MemberInterface $member): MemberCollectionInterface;
 
     public function get(string $identifier): MemberInterface;

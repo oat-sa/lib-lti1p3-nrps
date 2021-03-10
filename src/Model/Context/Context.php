@@ -45,14 +45,35 @@ class Context implements ContextInterface
         return $this->identifier;
     }
 
+    public function setIdentifier(string $identifier): ContextInterface
+    {
+        $this->identifier = $identifier;
+
+        return $this;
+    }
+
     public function getLabel(): ?string
     {
         return $this->label;
     }
 
+    public function setLabel(?string $label): ContextInterface
+    {
+        $this->label = $label;
+
+        return $this;
+    }
+
     public function getTitle(): ?string
     {
         return $this->title;
+    }
+
+    public function setTitle(?string $title): ContextInterface
+    {
+        $this->title = $title;
+
+        return $this;
     }
 
     public function jsonSerialize(): array

@@ -41,7 +41,7 @@ class MessageTest extends TestCase
         $this->subject = $this->createTestMessage();
     }
 
-    public function testGetData(): void
+    public function testData(): void
     {
         $this->assertEquals(
             [
@@ -53,6 +53,10 @@ class MessageTest extends TestCase
             ],
             $this->subject->getData()
         );
+
+        $this->subject->setData(['newData']);
+
+        $this->assertEquals(['newData'], $this->subject->getData());
     }
 
     public function testHasClaim(): void

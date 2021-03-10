@@ -42,6 +42,11 @@ class MemberCollection implements MemberCollectionInterface
         }
     }
 
+    public function all(): array
+    {
+        return $this->members->all();
+    }
+
     public function add(MemberInterface $member): MemberCollectionInterface
     {
         $this->members->set($member->getUserIdentity()->getIdentifier(), $member);

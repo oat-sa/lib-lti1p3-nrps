@@ -30,18 +30,18 @@ use OAT\Library\Lti1p3Nrps\Service\Server\Builder\MembershipServiceServerBuilder
 $builder = new class() implements MembershipServiceServerBuilderInterface 
 {
     public function buildContextMembership(
-        RegistrationInterface $registration,
         string $role = null,
-        int $limit = null
+        int $limit = null,
+        int $offset = null
     ): MembershipInterface {
         // Logic for building context membership for a given registration
     }
 
     public function buildResourceLinkMembership(
-        RegistrationInterface $registration,
         string $resourceLinkIdentifier,
         string $role = null,
-        int $limit = null
+        int $limit = null,
+        int $offset = null
     ): MembershipInterface {
         // Logic for building resource link membership for a given registration and resource link identifier
     }

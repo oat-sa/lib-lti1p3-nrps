@@ -35,11 +35,19 @@ interface MemberInterface extends JsonSerializable
 
     public function getUserIdentity(): UserIdentityInterface;
 
+    public function setUserIdentity(UserIdentityInterface $userIdentity): MemberInterface;
+
     public function getStatus(): string;
 
+    public function setStatus(string $status): MemberInterface;
+
     public function getRoles(): array;
+
+    public function setRoles(array $roles): MemberInterface;
 
     public function getProperties(): CollectionInterface;
 
     public function getMessage(): ?MessageInterface;
+
+    public function setMessage(?MessageInterface $message): MemberInterface;
 }

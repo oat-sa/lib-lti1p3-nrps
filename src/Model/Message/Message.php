@@ -39,6 +39,13 @@ class Message implements MessageInterface
         return $this->data;
     }
 
+    public function setData(array $data): MessageInterface
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
     public function getClaim(string $claim)
     {
         if (is_a($claim, MessagePayloadClaimInterface::class, true)) {

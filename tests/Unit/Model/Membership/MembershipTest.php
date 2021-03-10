@@ -22,6 +22,8 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Nrps\Tests\Unit\Model\Membership;
 
+use OAT\Library\Lti1p3Nrps\Model\Context\Context;
+use OAT\Library\Lti1p3Nrps\Model\Member\MemberCollection;
 use OAT\Library\Lti1p3Nrps\Model\Member\MemberInterface;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use OAT\Library\Lti1p3Nrps\Tests\Traits\NrpsDomainTestingTrait;
@@ -39,19 +41,27 @@ class MembershipTest extends TestCase
         $this->subject = $this->createTestMembership();
     }
 
-    public function testGetIdentifier(): void
+    public function testIdentifier(): void
     {
         $this->assertEquals('identifier', $this->subject->getIdentifier());
+
+        $this->subject->setIdentifier('newIdentifier');
+
+        $this->assertEquals('newIdentifier', $this->subject->getIdentifier());
     }
 
-    public function testGetContext(): void
+    public function testContext(): void
     {
         $this->assertEquals('identifier', $this->subject->getContext()->getIdentifier());
         $this->assertEquals('label', $this->subject->getContext()->getLabel());
         $this->assertEquals('title', $this->subject->getContext()->getTitle());
+
+        $this->subject->setContext(new Context('newIdentifier'));
+
+        $this->assertEquals('newIdentifier', $this->subject->getContext()->getIdentifier());
     }
 
-    public function testGetMembers(): void
+    public function testMembers(): void
     {
         $this->assertEquals(3, $this->subject->getMembers()->count());
 
@@ -62,6 +72,10 @@ class MembershipTest extends TestCase
         $this->assertTrue($this->subject->getMembers()->has('member1'));
         $this->assertTrue($this->subject->getMembers()->has('member2'));
         $this->assertTrue($this->subject->getMembers()->has('member3'));
+
+        $this->subject->setMembers(new MemberCollection());
+
+        $this->assertEquals(0, $this->subject->getMembers()->count());
     }
 
     public function testGetRelationLink(): void

@@ -48,19 +48,31 @@ class MemberTest extends TestCase
         $this->subject = $this->createTestMember();
     }
 
-    public function testGetUserIdentity(): void
+    public function testUserIdentity(): void
     {
         $this->assertEquals($this->userIdentity, $this->subject->getUserIdentity());
+
+        $this->subject->setUserIdentity($this->createTestUserIdentity('newUserIdentifier'));
+
+        $this->assertEquals('newUserIdentifier', $this->subject->getUserIdentity()->getIdentifier());
     }
 
-    public function testGetStatus(): void
+    public function testStatus(): void
     {
         $this->assertEquals(MemberInterface::STATUS_ACTIVE, $this->subject->getStatus());
+
+        $this->subject->setStatus(MemberInterface::STATUS_DELETED);
+
+        $this->assertEquals(MemberInterface::STATUS_DELETED, $this->subject->getStatus());
     }
 
-    public function testGetRoles(): void
+    public function testRoles(): void
     {
         $this->assertEquals(['Learner'], $this->subject->getRoles());
+
+        $this->subject->setRoles(['Instructor']);
+
+        $this->assertEquals(['Instructor'], $this->subject->getRoles());
     }
 
     public function testGetProperties(): void
@@ -97,9 +109,13 @@ class MemberTest extends TestCase
         $this->assertFalse($this->subject->getProperties()->has('invalid'));
     }
 
-    public function testGetMessage(): void
+    public function testMessage(): void
     {
         $this->assertEquals($this->message, $this->subject->getMessage());
+
+        $this->subject->setMessage($this->createTestMessage(['newData']));
+
+        $this->assertEquals(['newData'], $this->subject->getMessage()->getData());
     }
 
     public function testJsonSerialize()

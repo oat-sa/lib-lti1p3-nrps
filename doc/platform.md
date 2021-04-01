@@ -1,6 +1,6 @@
 # NRPS Platform - Membership service server
 
-> How to use the [MembershipServiceServer](../src/Service/Server/MembershipServiceServer.php) to serve authenticated NRPS service calls as a platform.
+> How to use the [MembershipServiceServerRequestHandler](../src/Service/Server/Handler/MembershipServiceServerRequestHandler.php) with the core [LtiServiceServer](https://github.com/oat-sa/lib-lti1p3-core/blob/master/src/Service/Server/LtiServiceServer.php) to serve authenticated NRPS service calls as a platform.
 
 ## Table of contents
 
@@ -9,7 +9,7 @@
 
 ## Features
 
-This library provides a [MembershipServiceServer](../src/Service/Server/MembershipServiceServer.php) ready to handle context and resource link membership requests.
+This library provides a [MembershipServiceServerRequestHandler](../src/Service/Server/Handler/MembershipServiceServerRequestHandler.php) ready to be use with the core [LtiServiceServer](https://github.com/oat-sa/lib-lti1p3-core/blob/master/src/Service/Server/LtiServiceServer.php) to handle context and resource link membership requests.
 
 - it accepts a [PSR7 ServerRequestInterface](https://www.php-fig.org/psr/psr-7/#321-psrhttpmessageserverrequestinterface),
 - leverages the [required IMS LTI 1.3 service authentication](https://www.imsglobal.org/spec/security/v1p0/#securing_web_services),
@@ -30,47 +30,55 @@ use OAT\Library\Lti1p3Nrps\Service\Server\Builder\MembershipServiceServerBuilder
 $builder = new class() implements MembershipServiceServerBuilderInterface 
 {
     public function buildContextMembership(
-        string $role = null,
-        int $limit = null,
-        int $offset = null
+        RegistrationInterface $registration,
+        ?string $role = null,
+        ?int $limit = null,
+        ?int $offset = null
     ): MembershipInterface {
         // Logic for building context membership for a given registration
     }
 
     public function buildResourceLinkMembership(
+        RegistrationInterface $registration,
         string $resourceLinkIdentifier,
-        string $role = null,
-        int $limit = null,
-        int $offset = null
+        ?string $role = null,
+        ?int $limit = null,
+        ?int $offset = null
     ): MembershipInterface {
         // Logic for building resource link membership for a given registration and resource link identifier
     }
 };
 ```
 
-You can then construct the [MembershipServiceServer](../src/Service/Server/MembershipServiceServer.php) with:
-- the [AccessTokenRequestValidator](https://github.com/oat-sa/lib-lti1p3-core/blob/master/src/Service/Server/Validator/AccessTokenRequestValidator.php) (from lti1p3-core)
-- your [MembershipServiceServerBuilderInterface](../src/Service/Server/Builder/MembershipServiceServerBuilderInterface.php) implementation
+Then:
+- you can construct the [MembershipServiceServerRequestHandler](../src/Service/Server/Handler/MembershipServiceServerRequestHandler.php) (constructed with your [MembershipServiceServerBuilderInterface](../src/Service/Server/Builder/MembershipServiceServerBuilderInterface.php) implementation)
+- to finally expose it to requests using the core [LtiServiceServer](https://github.com/oat-sa/lib-lti1p3-core/blob/master/src/Service/Server/LtiServiceServer.php) (constructed with the [RequestAccessTokenValidator](https://github.com/oat-sa/lib-lti1p3-core/blob/master/src/Security/OAuth2/Validator/RequestAccessTokenValidator.php), from core library)
 
-To finally expose it to requests:
 ```php
 <?php
 
 use OAT\Library\Lti1p3Core\Registration\RegistrationRepositoryInterface;
-use OAT\Library\Lti1p3Core\Service\Server\Validator\AccessTokenRequestValidator;
-use OAT\Library\Lti1p3Nrps\Service\Server\MembershipServiceServer;
+use OAT\Library\Lti1p3Core\Security\OAuth2\Validator\RequestAccessTokenValidator;
+use OAT\Library\Lti1p3Core\Service\Server\LtiServiceServer;
+use OAT\Library\Lti1p3Nrps\Service\Server\Builder\MembershipServiceServerBuilderInterface;
+use OAT\Library\Lti1p3Nrps\Service\Server\Handler\MembershipServiceServerRequestHandler;
 use Psr\Http\Message\ServerRequestInterface;
-
-/** @var RegistrationRepositoryInterface $repository */
-$repository = ...
-
-$validator = new AccessTokenRequestValidator($repository);
-
-$membershipServiceServer = new MembershipServiceServer($validator, $builder);
 
 /** @var ServerRequestInterface $request */
 $request = ...
 
-// Generates a response containing the built membership representation
-$response = $membershipServiceServer->handle($request);
+/** @var RegistrationRepositoryInterface $repository */
+$repository = ...
+
+/** @var MembershipServiceServerBuilderInterface $builder */
+$builder = ...
+
+$validator = new RequestAccessTokenValidator($repository);
+
+$handler = new MembershipServiceServerRequestHandler($builder);
+
+$server = new LtiServiceServer($validator, $handler);
+
+// Generates an authenticated response containing the built membership representation
+$response = $server->handle($request);
 ```

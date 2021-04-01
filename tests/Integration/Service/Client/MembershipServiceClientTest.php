@@ -27,7 +27,7 @@ use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
 use OAT\Library\Lti1p3Core\Message\Payload\Claim\ResourceLinkClaim;
 use OAT\Library\Lti1p3Core\Message\Payload\LtiMessagePayloadInterface;
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
-use OAT\Library\Lti1p3Core\Service\Client\ServiceClientInterface;
+use OAT\Library\Lti1p3Core\Service\Client\LtiServiceClientInterface;
 use OAT\Library\Lti1p3Core\Tests\Traits\NetworkTestingTrait;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use OAT\Library\Lti1p3Nrps\Service\Client\MembershipServiceClient;
@@ -41,7 +41,7 @@ class MembershipServiceClientTest extends TestCase
     use NrpsDomainTestingTrait;
     use NetworkTestingTrait;
 
-    /** @var ServiceClientInterface|MockObject */
+    /** @var LtiServiceClientInterface|MockObject */
     private $clientMock;
 
     /** @var MembershipServiceClient */
@@ -49,7 +49,7 @@ class MembershipServiceClientTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->clientMock = $this->createMock(ServiceClientInterface::class);
+        $this->clientMock = $this->createMock(LtiServiceClientInterface::class);
 
         $this->subject = new MembershipServiceClient($this->clientMock);
     }

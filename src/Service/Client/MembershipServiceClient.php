@@ -27,8 +27,8 @@ use OAT\Library\Lti1p3Core\Exception\LtiException;
 use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
 use OAT\Library\Lti1p3Core\Message\Payload\LtiMessagePayloadInterface;
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
-use OAT\Library\Lti1p3Core\Service\Client\ServiceClient;
-use OAT\Library\Lti1p3Core\Service\Client\ServiceClientInterface;
+use OAT\Library\Lti1p3Core\Service\Client\LtiServiceClient;
+use OAT\Library\Lti1p3Core\Service\Client\LtiServiceClientInterface;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializer;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializerInterface;
@@ -40,17 +40,17 @@ use Throwable;
  */
 class MembershipServiceClient implements MembershipServiceInterface
 {
-    /** @var ServiceClientInterface */
+    /** @var LtiServiceClientInterface */
     private $client;
 
     /** @var MembershipSerializerInterface */
     private $serializer;
 
     public function __construct(
-        ServiceClientInterface $client = null,
-        MembershipSerializerInterface $serializer = null
+        ?LtiServiceClientInterface $client = null,
+        ?MembershipSerializerInterface $serializer = null
     ) {
-        $this->client = $client ?? new ServiceClient();
+        $this->client = $client ?? new LtiServiceClient();
         $this->serializer = $serializer ?? new MembershipSerializer();
     }
 

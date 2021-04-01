@@ -49,7 +49,7 @@ class Member implements MemberInterface
         string $status,
         array $roles,
         array $properties = [],
-        MessageInterface $message = null
+        ?MessageInterface $message = null
     ) {
         $this->userIdentity = $userIdentity;
         $this->status = $status;

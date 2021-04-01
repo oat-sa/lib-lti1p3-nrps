@@ -33,7 +33,7 @@ class MembershipSerializer implements MembershipSerializerInterface
     /** @var MembershipFactoryInterface */
     private $membershipFactory;
 
-    public function __construct(MembershipFactoryInterface $membershipFactory = null)
+    public function __construct(?MembershipFactoryInterface $membershipFactory = null)
     {
         $this->membershipFactory = $membershipFactory ?? new MembershipFactory();
     }

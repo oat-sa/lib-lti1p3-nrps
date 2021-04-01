@@ -42,8 +42,8 @@ class MembershipFactory implements MembershipFactoryInterface
     private $memberFactory;
 
     public function __construct(
-        ContextFactoryInterface $contextFactory = null,
-        MemberFactoryInterface $memberFactory = null
+        ?ContextFactoryInterface $contextFactory = null,
+        ?MemberFactoryInterface $memberFactory = null
     ) {
         $this->contextFactory = $contextFactory ?? new ContextFactory();
         $this->memberFactory = $memberFactory ?? new MemberFactory();
@@ -52,7 +52,7 @@ class MembershipFactory implements MembershipFactoryInterface
     /**
      * @throws LtiExceptionInterface
      */
-    public function create(array $data, string $relationLink = null): MembershipInterface
+    public function create(array $data, ?string $relationLink = null): MembershipInterface
     {
         try {
             $memberCollection = new MemberCollection();

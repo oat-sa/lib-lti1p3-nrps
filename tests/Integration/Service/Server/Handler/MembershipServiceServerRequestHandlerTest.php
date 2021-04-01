@@ -20,30 +20,31 @@
 
 declare(strict_types=1);
 
-namespace OAT\Library\Lti1p3Nrps\Tests\Integration\Service\Server;
+namespace OAT\Library\Lti1p3Nrps\Tests\Integration\Service\Server\Handler;
 
 use Exception;
-use OAT\Library\Lti1p3Core\Service\Server\Validator\AccessTokenRequestValidationResult;
-use OAT\Library\Lti1p3Core\Service\Server\Validator\AccessTokenRequestValidator;
+use OAT\Library\Lti1p3Core\Security\OAuth2\Validator\RequestAccessTokenValidator;
+use OAT\Library\Lti1p3Core\Security\OAuth2\Validator\Result\RequestAccessTokenValidationResult;
+use OAT\Library\Lti1p3Core\Service\Server\LtiServiceServer;
 use OAT\Library\Lti1p3Core\Tests\Resource\Logger\TestLogger;
 use OAT\Library\Lti1p3Core\Tests\Traits\NetworkTestingTrait;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializer;
 use OAT\Library\Lti1p3Nrps\Service\MembershipServiceInterface;
 use OAT\Library\Lti1p3Nrps\Service\Server\Builder\MembershipServiceServerBuilderInterface;
-use OAT\Library\Lti1p3Nrps\Service\Server\MembershipServiceServer;
+use OAT\Library\Lti1p3Nrps\Service\Server\Handler\MembershipServiceServerRequestHandler;
 use OAT\Library\Lti1p3Nrps\Tests\Traits\NrpsDomainTestingTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LogLevel;
 
-class MembershipServiceServerTest extends TestCase
+class MembershipServiceServerRequestHandlerTest extends TestCase
 {
     use NrpsDomainTestingTrait;
     use NetworkTestingTrait;
 
-    /** @var AccessTokenRequestValidator|MockObject */
+    /** @var RequestAccessTokenValidator|MockObject */
     private $validatorMock;
 
     /** @var MembershipServiceServerBuilderInterface|MockObject */
@@ -55,20 +56,27 @@ class MembershipServiceServerTest extends TestCase
     /** @var TestLogger */
     private $logger;
 
-    /** @var MembershipServiceServer */
+    /** @var MembershipServiceServerRequestHandler */
     private $subject;
+
+    /** @var LtiServiceServer */
+    private $server;
 
     protected function setUp(): void
     {
-        $this->validatorMock = $this->createMock(AccessTokenRequestValidator::class);
+        $this->validatorMock = $this->createMock(RequestAccessTokenValidator::class);
         $this->builderMock = $this->createMock(MembershipServiceServerBuilderInterface::class);
         $this->serializer = new MembershipSerializer();
         $this->logger = new TestLogger();
 
-        $this->subject = new MembershipServiceServer(
-            $this->validatorMock,
+        $this->subject = new MembershipServiceServerRequestHandler(
             $this->builderMock,
-            $this->serializer,
+            $this->serializer
+        );
+
+        $this->server = new LtiServiceServer(
+            $this->validatorMock,
+            $this->subject,
             null,
             $this->logger
         );
@@ -88,7 +96,7 @@ class MembershipServiceServerTest extends TestCase
             ]
         );
 
-        $validationResult = new AccessTokenRequestValidationResult($registration);
+        $validationResult = new RequestAccessTokenValidationResult($registration);
 
         $this->validatorMock
             ->expects($this->once())
@@ -101,7 +109,7 @@ class MembershipServiceServerTest extends TestCase
             ->method('buildContextMembership')
             ->willReturn($membership);
 
-        $response = $this->subject->handle($request);
+        $response = $this->server->handle($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -113,7 +121,7 @@ class MembershipServiceServerTest extends TestCase
         $this->assertEquals($membership->getContext(), $result->getContext());
         $this->assertEquals($membership->getMembers(), $result->getMembers());
 
-        $this->assertEmpty($this->logger->getLogs());
+        $this->assertTrue($this->logger->hasLog(LogLevel::INFO, 'NRPS service success'));
     }
 
     public function testContextMembershipRequestHandlingWithRoleAndLimitAndOffset(): void
@@ -133,7 +141,7 @@ class MembershipServiceServerTest extends TestCase
             ]
         );
 
-        $validationResult = new AccessTokenRequestValidationResult($registration);
+        $validationResult = new RequestAccessTokenValidationResult($registration);
 
         $this->validatorMock
             ->expects($this->once())
@@ -144,10 +152,10 @@ class MembershipServiceServerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildContextMembership')
-            ->with($role, $limit, $offset)
+            ->with($registration, $role, $limit, $offset)
             ->willReturn($membership);
 
-        $response = $this->subject->handle($request);
+        $response = $this->server->handle($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -159,7 +167,7 @@ class MembershipServiceServerTest extends TestCase
         $this->assertEquals($membership->getContext(), $result->getContext());
         $this->assertEquals($membership->getMembers(), $result->getMembers());
 
-        $this->assertEmpty($this->logger->getLogs());
+        $this->assertTrue($this->logger->hasLog(LogLevel::INFO, 'NRPS service success'));
     }
 
     public function testResourceLinkMembershipRequestHandling(): void
@@ -177,7 +185,7 @@ class MembershipServiceServerTest extends TestCase
             ]
         );
 
-        $validationResult = new AccessTokenRequestValidationResult($registration);
+        $validationResult = new RequestAccessTokenValidationResult($registration);
 
         $this->validatorMock
             ->expects($this->once())
@@ -188,10 +196,10 @@ class MembershipServiceServerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildResourceLinkMembership')
-            ->with($resourceIdentifier)
+            ->with($registration, $resourceIdentifier)
             ->willReturn($membership);
 
-        $response = $this->subject->handle($request);
+        $response = $this->server->handle($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -203,7 +211,7 @@ class MembershipServiceServerTest extends TestCase
         $this->assertEquals($membership->getContext(), $result->getContext());
         $this->assertEquals($membership->getMembers(), $result->getMembers());
 
-        $this->assertEmpty($this->logger->getLogs());
+        $this->assertTrue($this->logger->hasLog(LogLevel::INFO, 'NRPS service success'));
     }
 
     public function testResourceLinkMembershipRequestHandlingWithRoleAndLimit(): void
@@ -223,7 +231,7 @@ class MembershipServiceServerTest extends TestCase
             ]
         );
 
-        $validationResult = new AccessTokenRequestValidationResult($registration);
+        $validationResult = new RequestAccessTokenValidationResult($registration);
 
         $this->validatorMock
             ->expects($this->once())
@@ -234,10 +242,10 @@ class MembershipServiceServerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildResourceLinkMembership')
-            ->with($resourceIdentifier, $role, $limit)
+            ->with($registration, $resourceIdentifier, $role, $limit)
             ->willReturn($membership);
 
-        $response = $this->subject->handle($request);
+        $response = $this->server->handle($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -249,7 +257,7 @@ class MembershipServiceServerTest extends TestCase
         $this->assertEquals($membership->getContext(), $result->getContext());
         $this->assertEquals($membership->getMembers(), $result->getMembers());
 
-        $this->assertEmpty($this->logger->getLogs());
+        $this->assertTrue($this->logger->hasLog(LogLevel::INFO, 'NRPS service success'));
     }
 
     public function testHttpMethodError(): void
@@ -271,12 +279,12 @@ class MembershipServiceServerTest extends TestCase
             ->expects($this->never())
             ->method('buildResourceLinkMembership');
 
-        $response = $this->subject->handle($request);
+        $response = $this->server->handle($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(405, $response->getStatusCode());
 
-        $this->assertTrue($this->logger->hasLog(LogLevel::ERROR, 'Not acceptable HTTP method, accepts: GET'));
+        $this->assertTrue($this->logger->hasLog(LogLevel::ERROR, 'Not acceptable request method, accepts: [get]'));
     }
 
     public function testContentTypeError(): void
@@ -298,12 +306,17 @@ class MembershipServiceServerTest extends TestCase
             ->expects($this->never())
             ->method('buildResourceLinkMembership');
 
-        $response = $this->subject->handle($request);
+        $response = $this->server->handle($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(406, $response->getStatusCode());
 
-        $this->assertTrue($this->logger->hasLog(LogLevel::ERROR, 'Not acceptable content type, accepts: application/vnd.ims.lti-nrps.v2.membershipcontainer+json'));
+        $this->assertTrue(
+            $this->logger->hasLog(
+                LogLevel::ERROR,
+                'Not acceptable request content type, accepts: application/vnd.ims.lti-nrps.v2.membershipcontainer+json'
+            )
+        );
     }
 
     public function testValidationError(): void
@@ -320,7 +333,7 @@ class MembershipServiceServerTest extends TestCase
             ]
         );
 
-        $validationResult = new AccessTokenRequestValidationResult($registration, null, [], $error);
+        $validationResult = new RequestAccessTokenValidationResult($registration, null, [], $error);
 
         $this->validatorMock
             ->expects($this->once())
@@ -328,7 +341,7 @@ class MembershipServiceServerTest extends TestCase
             ->with($request)
             ->willReturn($validationResult);
 
-        $response = $this->subject->handle($request);
+        $response = $this->server->handle($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(401, $response->getStatusCode());
@@ -351,7 +364,7 @@ class MembershipServiceServerTest extends TestCase
             ]
         );
 
-        $validationResult = new AccessTokenRequestValidationResult($registration);
+        $validationResult = new RequestAccessTokenValidationResult($registration);
 
         $this->validatorMock
             ->expects($this->once())
@@ -364,11 +377,11 @@ class MembershipServiceServerTest extends TestCase
             ->method('buildContextMembership')
             ->willThrowException(new Exception($error));
 
-        $response = $this->subject->handle($request);
+        $response = $this->server->handle($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertEquals('Internal membership service error', $response->getBody()->__toString());
+        $this->assertEquals('Internal NRPS service error', $response->getBody()->__toString());
 
         $this->assertTrue($this->logger->hasLog(LogLevel::ERROR, $error));
     }

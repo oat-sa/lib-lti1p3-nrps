@@ -26,5 +26,5 @@ use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 
 interface MembershipFactoryInterface
 {
-    public function create(array $data): MembershipInterface;
+    public function create(array $data, ?string $relationLink = null): MembershipInterface;
 }

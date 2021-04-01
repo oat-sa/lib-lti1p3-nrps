@@ -152,7 +152,7 @@ class MembershipServiceServerRequestHandlerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildContextMembership')
-            ->with($role, $limit, $offset)
+            ->with($registration, $role, $limit, $offset)
             ->willReturn($membership);
 
         $response = $this->server->handle($request);
@@ -196,7 +196,7 @@ class MembershipServiceServerRequestHandlerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildResourceLinkMembership')
-            ->with($resourceIdentifier)
+            ->with($registration, $resourceIdentifier)
             ->willReturn($membership);
 
         $response = $this->server->handle($request);
@@ -242,7 +242,7 @@ class MembershipServiceServerRequestHandlerTest extends TestCase
         $this->builderMock
             ->expects($this->once())
             ->method('buildResourceLinkMembership')
-            ->with($resourceIdentifier, $role, $limit)
+            ->with($registration, $resourceIdentifier, $role, $limit)
             ->willReturn($membership);
 
         $response = $this->server->handle($request);

@@ -42,8 +42,8 @@ class MemberFactory implements MemberFactoryInterface
     private $messageFactory;
 
     public function __construct(
-        UserIdentityFactoryInterface $userIdentityFactory = null,
-        MessageFactoryInterface $messageFactory = null
+        ?UserIdentityFactoryInterface $userIdentityFactory = null,
+        ?MessageFactoryInterface $messageFactory = null
     ) {
         $this->userIdentityFactory = $userIdentityFactory ?? new UserIdentityFactory();
         $this->messageFactory = $messageFactory ?? new MessageFactory();

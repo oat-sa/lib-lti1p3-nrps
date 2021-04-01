@@ -1,6 +1,17 @@
 CHANGELOG
 =========
 
+5.0.0
+-----
+
+* Added psalm support
+* Deleted MembershipServiceServer in favor to MembershipServiceServerRequestHandler (to be used with core LtiServiceServer)
+* Updated oat-sa/lib-lti1p3-core dependency to version 5.0
+* Updated MembershipServiceServerBuilderInterface parameters to work with registration  
+* Updated MembershipServiceClient (to work with core LtiServiceClient)
+* Updated overall constructors to handle nullable parameters  
+* Updated documentation
+
 4.0.0
 -----
 

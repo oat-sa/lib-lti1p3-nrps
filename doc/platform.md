@@ -1,6 +1,6 @@
 # NRPS Platform - Membership service server
 
-> How to use the [MembershipServiceServerRequestHandler](../src/Service/Server/Handler/MembershipServiceServerRequestHandler.php) with the core [LtiServiceServer](https://github.com/oat-sa/lib-lti1p3-core/blob/master/src/Service/Server/LtiServiceServer.php) to serve authenticated NRPS service calls as a platform.
+> How to use the [MembershipServiceServerRequestHandler](../src/Service/Server/Handler/MembershipServiceServerRequestHandler.php) (with the core [LtiServiceServer](https://github.com/oat-sa/lib-lti1p3-core/blob/master/src/Service/Server/LtiServiceServer.php)) to serve authenticated NRPS service calls as a platform.
 
 ## Table of contents
 

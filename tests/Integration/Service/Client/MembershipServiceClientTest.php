@@ -63,7 +63,7 @@ class MembershipServiceClientTest extends TestCase
         $membership = $this->createTestMembership();
 
         $payload
-            ->expects($this->exactly(2))
+            ->expects($this->once())
             ->method('getNrps')
             ->willReturn($claim);
 
@@ -202,12 +202,12 @@ class MembershipServiceClientTest extends TestCase
         $membership = $this->createTestMembership();
 
         $payload
-            ->expects($this->exactly(2))
+            ->expects($this->once())
             ->method('getNrps')
             ->willReturn($nrpsClaim);
 
         $payload
-            ->expects($this->exactly(2))
+            ->expects($this->once())
             ->method('getResourceLink')
             ->willReturn($resourceLinkClaim);
 

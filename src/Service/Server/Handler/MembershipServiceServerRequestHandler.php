@@ -87,7 +87,7 @@ class MembershipServiceServerRequestHandler implements LtiServiceServerRequestHa
     ): ResponseInterface {
         parse_str($request->getUri()->getQuery(), $parameters);
 
-        $rlId = $parameters['rlid'] ?? null;
+        $resourceLinkIdentifier = $parameters['rlid'] ?? null;
         $role = $parameters['role'] ?? null;
         $limit = array_key_exists('limit', $parameters)
             ? intval($parameters['limit'])
@@ -96,22 +96,20 @@ class MembershipServiceServerRequestHandler implements LtiServiceServerRequestHa
             ? intval($parameters['offset'])
             : null;
 
-        if (null !== $rlId) {
-            $membership = $this->builder->buildResourceLinkMembership(
+        $membership = null !== $resourceLinkIdentifier
+            ? $this->builder->buildResourceLinkMembership(
                 $registration,
-                $rlId,
+                $resourceLinkIdentifier,
+                $role,
+                $limit,
+                $offset
+            )
+            : $this->builder->buildContextMembership(
+                $registration,
                 $role,
                 $limit,
                 $offset
             );
-        } else {
-            $membership = $this->builder->buildContextMembership(
-                $registration,
-                $role,
-                $limit,
-                $offset
-            );
-        }
 
         $responseBody = $this->serializer->serialize($membership);
         $responseHeaders = [

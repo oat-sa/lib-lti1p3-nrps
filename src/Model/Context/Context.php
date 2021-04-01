@@ -33,7 +33,7 @@ class Context implements ContextInterface
     /** @var string|null */
     private $title;
 
-    public function __construct(string $identifier, string $label = null, string $title = null)
+    public function __construct(string $identifier, ?string $label = null, ?string $title = null)
     {
         $this->identifier = $identifier;
         $this->label = $label;

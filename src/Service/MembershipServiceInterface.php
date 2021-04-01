@@ -24,6 +24,7 @@ namespace OAT\Library\Lti1p3Nrps\Service;
 
 interface MembershipServiceInterface
 {
+    public const NAME = 'NRPS';
     public const AUTHORIZATION_SCOPE_MEMBERSHIP = 'https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly';
     public const CONTENT_TYPE_MEMBERSHIP = 'application/vnd.ims.lti-nrps.v2.membershipcontainer+json';
     public const HEADER_LINK = 'Link';

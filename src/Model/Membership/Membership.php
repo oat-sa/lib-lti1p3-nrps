@@ -43,7 +43,7 @@ class Membership implements MembershipInterface
         string $identifier,
         ContextInterface $context,
         MemberCollectionInterface $members,
-        string $relationLink = null
+        ?string $relationLink = null
     ) {
         $this->identifier = $identifier;
         $this->context = $context;

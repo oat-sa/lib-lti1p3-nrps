@@ -27,8 +27,8 @@ use OAT\Library\Lti1p3Core\Exception\LtiException;
 use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
 use OAT\Library\Lti1p3Core\Message\Payload\LtiMessagePayloadInterface;
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
-use OAT\Library\Lti1p3Core\Service\Client\ServiceClient;
-use OAT\Library\Lti1p3Core\Service\Client\ServiceClientInterface;
+use OAT\Library\Lti1p3Core\Service\Client\LtiServiceClient;
+use OAT\Library\Lti1p3Core\Service\Client\LtiServiceClientInterface;
 use OAT\Library\Lti1p3Nrps\Model\Membership\MembershipInterface;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializer;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializerInterface;
@@ -40,17 +40,17 @@ use Throwable;
  */
 class MembershipServiceClient implements MembershipServiceInterface
 {
-    /** @var ServiceClientInterface */
+    /** @var LtiServiceClientInterface */
     private $client;
 
     /** @var MembershipSerializerInterface */
     private $serializer;
 
     public function __construct(
-        ServiceClientInterface $client = null,
-        MembershipSerializerInterface $serializer = null
+        ?LtiServiceClientInterface $client = null,
+        ?MembershipSerializerInterface $serializer = null
     ) {
-        $this->client = $client ?? new ServiceClient();
+        $this->client = $client ?? new LtiServiceClient();
         $this->serializer = $serializer ?? new MembershipSerializer();
     }
 
@@ -61,17 +61,19 @@ class MembershipServiceClient implements MembershipServiceInterface
     public function getContextMembershipFromPayload(
         RegistrationInterface $registration,
         LtiMessagePayloadInterface $payload,
-        string $role = null,
-        int $limit = null
+        ?string $role = null,
+        ?int $limit = null
     ): MembershipInterface {
         try {
-            if (null === $payload->getNrps()) {
+            $nrpsClaim = $payload->getNrps();
+
+            if (null === $nrpsClaim) {
                 throw new InvalidArgumentException('Provided payload does not contain NRPS claim');
             }
 
             return $this->getMembership(
                 $registration,
-                $payload->getNrps()->getContextMembershipsUrl(),
+                $nrpsClaim->getContextMembershipsUrl(),
                 null,
                 $role,
                 $limit
@@ -92,8 +94,8 @@ class MembershipServiceClient implements MembershipServiceInterface
     public function getContextMembership(
         RegistrationInterface $registration,
         string $membershipServiceUrl,
-        string $role = null,
-        int $limit = null
+        ?string $role = null,
+        ?int $limit = null
     ): MembershipInterface {
         try {
             return $this->getMembership(
@@ -119,22 +121,25 @@ class MembershipServiceClient implements MembershipServiceInterface
     public function getResourceLinkMembershipFromPayload(
         RegistrationInterface $registration,
         LtiMessagePayloadInterface $payload,
-        string $role = null,
-        int $limit = null
+        ?string $role = null,
+        ?int $limit = null
     ): MembershipInterface {
         try {
-            if (null === $payload->getResourceLink()) {
+            $resourceLinkClaim = $payload->getResourceLink();
+            $nrpsClaim = $payload->getNrps();
+
+            if (null === $resourceLinkClaim) {
                 throw new InvalidArgumentException('Provided payload does not contain ResourceLink claim');
             }
 
-            if (null === $payload->getNrps()) {
+            if (null === $nrpsClaim) {
                 throw new InvalidArgumentException('Provided payload does not contain NRPS claim');
             }
 
             return $this->getMembership(
                 $registration,
-                $payload->getNrps()->getContextMembershipsUrl(),
-                $payload->getResourceLink()->getIdentifier(),
+                $nrpsClaim->getContextMembershipsUrl(),
+                $resourceLinkClaim->getIdentifier(),
                 $role,
                 $limit
             );
@@ -155,8 +160,8 @@ class MembershipServiceClient implements MembershipServiceInterface
         RegistrationInterface $registration,
         string $membershipServiceUrl,
         string $resourceLinkIdentifier,
-        string $role = null,
-        int $limit = null
+        ?string $role = null,
+        ?int $limit = null
     ): MembershipInterface {
         try {
             return $this->getMembership(
@@ -178,9 +183,9 @@ class MembershipServiceClient implements MembershipServiceInterface
     private function getMembership(
         RegistrationInterface $registration,
         string $membershipServiceUrl,
-        string $resourceLinkIdentifier = null,
-        string $role = null,
-        int $limit = null
+        ?string $resourceLinkIdentifier = null,
+        ?string $role = null,
+        ?int $limit = null
     ): MembershipInterface {
         $response = $this->client->request(
             $registration,
@@ -206,9 +211,9 @@ class MembershipServiceClient implements MembershipServiceInterface
 
     private function buildNrpsEndpointUrl(
         string $membershipServiceUrl,
-        string $resourceLinkIdentifier = null,
-        string $role = null,
-        int $limit = null
+        ?string $resourceLinkIdentifier = null,
+        ?string $role = null,
+        ?int $limit = null
     ): string {
         $parameters = array_filter([
             'rlid' => $resourceLinkIdentifier,

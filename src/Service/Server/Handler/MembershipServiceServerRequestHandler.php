@@ -24,7 +24,7 @@ namespace OAT\Library\Lti1p3Nrps\Service\Server\Handler;
 
 use Http\Message\ResponseFactory;
 use Nyholm\Psr7\Factory\HttplugFactory;
-use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
+use OAT\Library\Lti1p3Core\Security\OAuth2\Validator\Result\RequestAccessTokenValidationResultInterface;
 use OAT\Library\Lti1p3Core\Service\Server\Handler\LtiServiceServerRequestHandlerInterface;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializer;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializerInterface;
@@ -81,10 +81,12 @@ class MembershipServiceServerRequestHandler implements LtiServiceServerRequestHa
         ];
     }
 
-    public function handleServiceRequest(
-        RegistrationInterface $registration,
-        ServerRequestInterface $request
+    public function handleValidatedServiceRequest(
+        RequestAccessTokenValidationResultInterface $validationResult,
+        ServerRequestInterface $request,
+        array $options = []
     ): ResponseInterface {
+        $registration = $validationResult->getRegistration();
         parse_str($request->getUri()->getQuery(), $parameters);
 
         $resourceLinkIdentifier = $parameters['rlid'] ?? null;

@@ -25,6 +25,7 @@ namespace OAT\Library\Lti1p3Nrps\Service\Client;
 use InvalidArgumentException;
 use OAT\Library\Lti1p3Core\Exception\LtiException;
 use OAT\Library\Lti1p3Core\Exception\LtiExceptionInterface;
+use OAT\Library\Lti1p3Core\Message\Payload\Claim\NrpsClaim;
 use OAT\Library\Lti1p3Core\Message\Payload\LtiMessagePayloadInterface;
 use OAT\Library\Lti1p3Core\Registration\RegistrationInterface;
 use OAT\Library\Lti1p3Core\Service\Client\LtiServiceClient;
@@ -55,32 +56,30 @@ class MembershipServiceClient implements MembershipServiceInterface
     }
 
     /**
-     * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership
      * @throws LtiExceptionInterface
      */
-    public function getContextMembershipFromPayload(
+    public function getContextMembershipForPayload(
         RegistrationInterface $registration,
         LtiMessagePayloadInterface $payload,
         ?string $role = null,
         ?int $limit = null
     ): MembershipInterface {
         try {
-            $nrpsClaim = $payload->getNrps();
+            $claim = $payload->getNrps();
 
-            if (null === $nrpsClaim) {
+            if (null === $claim) {
                 throw new InvalidArgumentException('Provided payload does not contain NRPS claim');
             }
 
-            return $this->getMembership(
+            return $this->getContextMembershipForClaim(
                 $registration,
-                $nrpsClaim->getContextMembershipsUrl(),
-                null,
+                $claim,
                 $role,
                 $limit
             );
         } catch (Throwable $exception) {
             throw new LtiException(
-                sprintf('Cannot get context membership from payload: %s', $exception->getMessage()),
+                sprintf('Cannot get context membership for payload: %s', $exception->getMessage()),
                 $exception->getCode(),
                 $exception
             );
@@ -88,7 +87,31 @@ class MembershipServiceClient implements MembershipServiceInterface
     }
 
     /**
-     * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership
+     * @throws LtiExceptionInterface
+     */
+    public function getContextMembershipForClaim(
+        RegistrationInterface $registration,
+        NrpsClaim $claim,
+        ?string $role = null,
+        ?int $limit = null
+    ): MembershipInterface {
+        try {
+            return $this->getContextMembership(
+                $registration,
+                $claim->getContextMembershipsUrl(),
+                $role,
+                $limit
+            );
+        } catch (Throwable $exception) {
+            throw new LtiException(
+                sprintf('Cannot get context membership for claim: %s', $exception->getMessage()),
+                $exception->getCode(),
+                $exception
+            );
+        }
+    }
+
+    /**
      * @throws LtiExceptionInterface
      */
     public function getContextMembership(
@@ -115,10 +138,9 @@ class MembershipServiceClient implements MembershipServiceInterface
     }
 
     /**
-     * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service
      * @throws LtiExceptionInterface
      */
-    public function getResourceLinkMembershipFromPayload(
+    public function getResourceLinkMembershipForPayload(
         RegistrationInterface $registration,
         LtiMessagePayloadInterface $payload,
         ?string $role = null,
@@ -136,16 +158,16 @@ class MembershipServiceClient implements MembershipServiceInterface
                 throw new InvalidArgumentException('Provided payload does not contain NRPS claim');
             }
 
-            return $this->getMembership(
+            return $this->getResourceLinkMembershipForClaim(
                 $registration,
-                $nrpsClaim->getContextMembershipsUrl(),
+                $nrpsClaim,
                 $resourceLinkClaim->getIdentifier(),
                 $role,
                 $limit
             );
         } catch (Throwable $exception) {
             throw new LtiException(
-                sprintf('Cannot get resource link membership from payload: %s', $exception->getMessage()),
+                sprintf('Cannot get resource link membership for payload: %s', $exception->getMessage()),
                 $exception->getCode(),
                 $exception
             );
@@ -153,7 +175,33 @@ class MembershipServiceClient implements MembershipServiceInterface
     }
 
     /**
-     * @see https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service
+     * @throws LtiExceptionInterface
+     */
+    public function getResourceLinkMembershipForClaim(
+        RegistrationInterface $registration,
+        NrpsClaim $claim,
+        string $resourceLinkIdentifier,
+        ?string $role = null,
+        ?int $limit = null
+    ): MembershipInterface {
+        try {
+            return $this->getResourceLinkMembership(
+                $registration,
+                $claim->getContextMembershipsUrl(),
+                $resourceLinkIdentifier,
+                $role,
+                $limit
+            );
+        } catch (Throwable $exception) {
+            throw new LtiException(
+                sprintf('Cannot get resource link membership for claim: %s', $exception->getMessage()),
+                $exception->getCode(),
+                $exception
+            );
+        }
+    }
+
+    /**
      * @throws LtiExceptionInterface
      */
     public function getResourceLinkMembership(
@@ -192,10 +240,12 @@ class MembershipServiceClient implements MembershipServiceInterface
             'GET',
             $this->buildNrpsEndpointUrl($membershipServiceUrl, $resourceLinkIdentifier, $role, $limit),
             [
-                'headers' => ['Accept' => static::CONTENT_TYPE_MEMBERSHIP]
+                'headers' => [
+                    'Accept' => static::CONTENT_TYPE_MEMBERSHIP,
+                ]
             ],
             [
-                static::AUTHORIZATION_SCOPE_MEMBERSHIP
+                static::AUTHORIZATION_SCOPE_MEMBERSHIP,
             ]
         );
 
@@ -215,11 +265,13 @@ class MembershipServiceClient implements MembershipServiceInterface
         ?string $role = null,
         ?int $limit = null
     ): string {
-        $parameters = array_filter([
-            'rlid' => $resourceLinkIdentifier,
-            'role' => $role,
-            'limit' => $limit,
-        ]);
+        $parameters = array_filter(
+            [
+                'rlid' => $resourceLinkIdentifier,
+                'role' => $role,
+                'limit' => $limit,
+            ]
+        );
 
         if (empty($parameters)) {
             return $membershipServiceUrl;

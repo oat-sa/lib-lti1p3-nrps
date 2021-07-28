@@ -54,7 +54,7 @@ class MembershipServiceClientTest extends TestCase
         $this->subject = new MembershipServiceClient($this->clientMock);
     }
 
-    public function testGetContextMembershipFromPayload(): void
+    public function testGetContextMembershipForPayload(): void
     {
         $payload = $this->createMock(LtiMessagePayloadInterface::class);
 
@@ -73,7 +73,7 @@ class MembershipServiceClientTest extends TestCase
             json_encode($membership)
         );
 
-        $result = $this->subject->getContextMembershipFromPayload($registration, $payload);
+        $result = $this->subject->getContextMembershipForPayload($registration, $payload);
 
         $this->assertInstanceOf(MembershipInterface::class, $result);
         $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
@@ -192,7 +192,7 @@ class MembershipServiceClientTest extends TestCase
         $this->assertEquals($membership->getMembers(), $result->getMembers());
     }
 
-    public function testGetResourceLinkMembershipFromPayload(): void
+    public function testGetResourceLinkMembershipForPayload(): void
     {
         $payload = $this->createMock(LtiMessagePayloadInterface::class);
 
@@ -221,7 +221,7 @@ class MembershipServiceClientTest extends TestCase
             json_encode($membership)
         );
 
-        $result = $this->subject->getResourceLinkMembershipFromPayload($registration, $payload);
+        $result = $this->subject->getResourceLinkMembershipForPayload($registration, $payload);
 
         $this->assertInstanceOf(MembershipInterface::class, $result);
         $this->assertEquals($membership->getIdentifier(), $result->getIdentifier());
@@ -264,10 +264,10 @@ class MembershipServiceClientTest extends TestCase
         $this->assertEquals($membership->getMembers(), $result->getMembers());
     }
 
-    public function testGetContextMembershipFromPayloadErrorOnMissingNRPSClaim(): void
+    public function testGetContextMembershipForPayloadErrorOnMissingNrpsClaim(): void
     {
         $this->expectException(LtiExceptionInterface::class);
-        $this->expectExceptionMessage('Cannot get context membership from payload: Provided payload does not contain NRPS claim');
+        $this->expectExceptionMessage('Cannot get context membership for payload: Provided payload does not contain NRPS claim');
 
         $payload = $this->createMock(LtiMessagePayloadInterface::class);
         $payload
@@ -275,7 +275,23 @@ class MembershipServiceClientTest extends TestCase
             ->method('getNrps')
             ->willReturn(null);
 
-        $this->subject->getContextMembershipFromPayload($this->createTestRegistration(), $payload);
+        $this->subject->getContextMembershipForPayload($this->createTestRegistration(), $payload);
+    }
+
+    public function testGetContextMembershipForClaimError(): void
+    {
+        $this->expectException(LtiExceptionInterface::class);
+        $this->expectExceptionMessage('Cannot get context membership for claim: Cannot get context membership: custom error');
+
+        $this->clientMock
+            ->expects($this->once())
+            ->method('request')
+            ->willThrowException(new Exception('custom error'));
+
+        $this->subject->getContextMembershipForClaim(
+            $this->createTestRegistration(),
+            $this->createTestNrpsClaim()
+        );
     }
 
     public function testGetContextMembershipError(): void
@@ -294,10 +310,10 @@ class MembershipServiceClientTest extends TestCase
         );
     }
 
-    public function testGetResourceLinkMembershipFromPayloadErrorOnMissingResourceLinkClaim(): void
+    public function testGetResourceLinkMembershipForPayloadErrorOnMissingResourceLinkClaim(): void
     {
         $this->expectException(LtiExceptionInterface::class);
-        $this->expectExceptionMessage('Cannot get resource link membership from payload: Provided payload does not contain ResourceLink claim');
+        $this->expectExceptionMessage('Cannot get resource link membership for payload: Provided payload does not contain ResourceLink claim');
 
         $payload = $this->createMock(LtiMessagePayloadInterface::class);
         $payload
@@ -305,13 +321,13 @@ class MembershipServiceClientTest extends TestCase
             ->method('getResourceLink')
             ->willReturn(null);
 
-        $this->subject->getResourceLinkMembershipFromPayload($this->createTestRegistration(), $payload);
+        $this->subject->getResourceLinkMembershipForPayload($this->createTestRegistration(), $payload);
     }
 
-    public function testGetResourceLinkMembershipFromPayloadErrorOnMissingNRPSClaim(): void
+    public function testGetResourceLinkMembershipForPayloadErrorOnMissingNrpsClaim(): void
     {
         $this->expectException(LtiExceptionInterface::class);
-        $this->expectExceptionMessage('Cannot get resource link membership from payload: Provided payload does not contain NRPS claim');
+        $this->expectExceptionMessage('Cannot get resource link membership for payload: Provided payload does not contain NRPS claim');
 
         $payload = $this->createMock(LtiMessagePayloadInterface::class);
         $payload
@@ -323,7 +339,24 @@ class MembershipServiceClientTest extends TestCase
             ->method('getNrps')
             ->willReturn(null);
 
-        $this->subject->getResourceLinkMembershipFromPayload($this->createTestRegistration(), $payload);
+        $this->subject->getResourceLinkMembershipForPayload($this->createTestRegistration(), $payload);
+    }
+
+    public function testGetResourceLinkMembershipForClaimError(): void
+    {
+        $this->expectException(LtiExceptionInterface::class);
+        $this->expectExceptionMessage('Cannot get resource link membership for claim: Cannot get resource link membership: custom error');
+
+        $this->clientMock
+            ->expects($this->once())
+            ->method('request')
+            ->willThrowException(new Exception('custom error'));
+
+        $this->subject->getResourceLinkMembershipForClaim(
+            $this->createTestRegistration(),
+            $this->createTestNrpsClaim(),
+            $this->createTestResourceLinkClaim()->getIdentifier()
+        );
     }
 
     public function testGetResourceLinkMembershipError(): void

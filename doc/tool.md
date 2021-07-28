@@ -11,15 +11,10 @@
 
 This library provides a [MembershipServiceClient](../src/Service/Client/MembershipServiceClient.php) (based on the [core LtiServiceClient](https://github.com/oat-sa/lib-lti1p3-core/blob/master/doc/service/service-client.md)) that allow retrieving NRPS memberships exposed by a platform.
 
-You can use:
-- `getContextMembershipFromPayload()` to get [context membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership) from a received LTI message payload
-- `getContextMembership()` to get [context membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#context-membership) for a given membership service url
-- `getResourceLinkMembershipFromPayload()` to get [resource link membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service) from a received LTI message payload
-- `getResourceLinkMembership()` to get [resource link membership](https://www.imsglobal.org/spec/lti-nrps/v2p0#resource-link-membership-service) for given membership service url and resource link identifier
-
 ## Usage
 
-To get a context membership:
+### Get a context membership
+
 ```php
 <?php
 
@@ -37,11 +32,18 @@ $payload  = ...;
 
 $membershipServiceClient = new MembershipServiceClient();
 
-$membership = $membershipServiceClient->getContextMembershipFromPayload(
+$membership = $membershipServiceClient->getContextMembershipForPayload(
     $registration, // [required] as the tool, it will call the platform of this registration
-    $payload,      // [required] from the LTI message payload containing the NRPS claim (got at LTI launch)
+    $payload,      // [required] for the LTI message payload containing the NRPS claim (got at LTI launch)
     'Learner',     // [optional] we can filter members for a role (default: no filter)
     10             // [optional] and limit the number of presented members (default: no limit)
+);
+// you also can call directly for a received NRPS claim
+$membership = $membershipServiceClient->getContextMembershipForClaim(
+    $registration,       // [required] as the tool, it will call the platform of this registration
+    $payload->getNrps(), // [required] for a NRPS claim (got at LTI launch)
+    'Learner',           // [optional] we can filter members for a role (default: no filter)
+    10                   // [optional] and limit the number of presented members (default: no limit)
 );
 
 // or you also can call directly for an given URL (avoid claim construction)
@@ -75,7 +77,8 @@ if ($membership->hasDifferences()) {
 }
 ```
 
-To get a resource link membership:
+### Get a resource link membership
+
 ```php
 <?php
 
@@ -93,11 +96,19 @@ $payload  = ...;
 
 $membershipServiceClient = new MembershipServiceClient();
 
-$membership = $membershipServiceClient->getResourceLinkMembershipFromPayload(
+$membership = $membershipServiceClient->getResourceLinkMembershipForPayload(
     $registration, // [required] as the tool, it will call the platform of this registration
-    $payload,      // [required] from the LTI message payload containing the NRPS and ResourceLink claims (got at LTI launch)
+    $payload,      // [required] for the LTI message payload containing the NRPS and ResourceLink claims (got at LTI launch)
     'Learner',     // [optional] we can filter members for a role (default: no filter)
     10             // [optional] and limit the number of presented members (default: no limit)
+);
+
+$membership = $membershipServiceClient->getResourceLinkMembershipForClaim(
+    $registration,       // [required] as the tool, it will call the platform of this registration
+    $payload->getNrps(), // [required] for a NRPS claim (got at LTI launch)
+    'someIdentifier',    // [required] for a resource link identifier
+    'Learner',           // [optional] we can filter members for a role (default: no filter)
+    10                   // [optional] and limit the number of presented members (default: no limit)
 );
 
 // or you also can call directly for an given URL and resource link identifier (avoid claims construction)

@@ -38,6 +38,7 @@ $membership = $membershipServiceClient->getContextMembershipForPayload(
     'Learner',     // [optional] we can filter members for a role (default: no filter)
     10             // [optional] and limit the number of presented members (default: no limit)
 );
+
 // you also can call directly for a received NRPS claim
 $membership = $membershipServiceClient->getContextMembershipForClaim(
     $registration,       // [required] as the tool, it will call the platform of this registration
@@ -103,6 +104,7 @@ $membership = $membershipServiceClient->getResourceLinkMembershipForPayload(
     10             // [optional] and limit the number of presented members (default: no limit)
 );
 
+// you also can call directly for a received NRPS claim
 $membership = $membershipServiceClient->getResourceLinkMembershipForClaim(
     $registration,       // [required] as the tool, it will call the platform of this registration
     $payload->getNrps(), // [required] for a NRPS claim (got at LTI launch)

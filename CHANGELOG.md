@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+7.0.0
+-----
+
+* Renamed MembershipServiceClient getContextMembershipFromPayload() method into getContextMembershipForPayload()
+* Renamed MembershipServiceClient getResourceLinkMembershipFromPayload() method into getResourceLinkMembershipForPayload()
+* Added methods to MembershipServiceClient to work with NRPS claim
+* Updated documentation
+
 6.0.0
 -----
 

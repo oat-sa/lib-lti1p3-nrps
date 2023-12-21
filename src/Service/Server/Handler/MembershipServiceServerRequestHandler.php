@@ -22,8 +22,7 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Nrps\Service\Server\Handler;
 
-use Http\Message\ResponseFactory;
-use Nyholm\Psr7\Factory\HttplugFactory;
+use Nyholm\Psr7\Response;
 use OAT\Library\Lti1p3Core\Security\OAuth2\Validator\Result\RequestAccessTokenValidationResultInterface;
 use OAT\Library\Lti1p3Core\Service\Server\Handler\LtiServiceServerRequestHandlerInterface;
 use OAT\Library\Lti1p3Nrps\Serializer\MembershipSerializer;
@@ -44,17 +43,12 @@ class MembershipServiceServerRequestHandler implements LtiServiceServerRequestHa
     /** @var MembershipSerializerInterface */
     private $serializer;
 
-    /** @var ResponseFactory */
-    private $factory;
-
     public function __construct(
         MembershipServiceServerBuilderInterface $builder,
         ?MembershipSerializerInterface $serializer = null,
-        ?ResponseFactory $factory = null
     ) {
         $this->builder = $builder;
         $this->serializer = $serializer ?? new MembershipSerializer();
-        $this->factory = $factory ?? new HttplugFactory();
     }
 
     public function getServiceName(): string
@@ -123,6 +117,6 @@ class MembershipServiceServerRequestHandler implements LtiServiceServerRequestHa
             $responseHeaders['Link'] = $membership->getRelationLink();
         }
 
-        return $this->factory->createResponse(200, null, $responseHeaders, $responseBody);
+        return new Response(200, $responseHeaders, $responseBody);
     }
 }

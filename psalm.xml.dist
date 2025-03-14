@@ -16,6 +16,22 @@
             <directory name="vendor"/>
         </ignoreFiles>
     </projectFiles>
+         <issueHandlers>
+        <MissingOverrideAttribute errorLevel="suppress" />
+        <PossiblyUnusedMethod errorLevel="suppress" />
+        <UnusedClass errorLevel="suppress" />
+        <PossiblyUnusedReturnValue>
+            <errorLevel type="suppress">
+                <file name="src/Model/Member/MemberCollectionInterface.php" />
+                <file name="src/Model/Membership/MembershipInterface.php" method="setRelationLink"/>
+            </errorLevel>
+        </PossiblyUnusedReturnValue>
+        <MissingTemplateParam>
+            <errorLevel type="suppress">
+                <file name="src/Model/Member/MemberCollectionInterface.php" />
+            </errorLevel>
+        </MissingTemplateParam>
+    </issueHandlers>
     <mockClasses>
         <class name="PHPUnit\Framework\MockObject\MockObject"/>
     </mockClasses>

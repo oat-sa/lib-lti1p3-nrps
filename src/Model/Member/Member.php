@@ -114,15 +114,15 @@ class Member implements MemberInterface
 
     public function jsonSerialize(): array
     {
-        $properties = $this->properties->all();
+        $properties = [
+            'status' => $this->getStatus(),
+            ...$this->getUserIdentity()->normalize(),
+            ...$this->getProperties()->all(),
+            'roles' => $this->getRoles()
+        ];
 
         if (null !== $this->message) {
-            $properties = array_merge(
-                $properties,
-                [
-                    'message' => [$this->message->getData()]
-                ]
-            );
+            $properties['message'] = $this->getMessage()->jsonSerialize();
         }
 
         return array_filter($properties);
